@@ -1,6 +1,5 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
+
 
 void main() {
   runApp(const MyApp());
@@ -62,7 +61,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+
 
   void _incrementCounter() {
     setState(() {
@@ -71,7 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
       // so that the display can reflect the updated values. If we changed
       // _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
-      _counter++;
+      
     });
   }
 
@@ -93,31 +92,10 @@ class _MyHomePageState extends State<MyHomePage> {
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          children: [
-            Container(
-              width: double.infinity,
-              margin: EdgeInsets.all(50.0),
-              padding: EdgeInsets.all(50.0),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(25),
-                color: Colors.red,
-              ),
-            ),
-            Container(
-              width: double.infinity,
-              margin: EdgeInsets.all(50.0),
-              padding: EdgeInsets.all(50.0),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(25),
-                color: Colors.red,
-              ),
-            ),
-          ],
-        ),
+      body: Image.asset(
+        'assets/images/light-home.webp',
+        fit: BoxFit.cover,
+        height: double.infinity,
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
