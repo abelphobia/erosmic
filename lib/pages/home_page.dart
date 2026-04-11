@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:erosmic/categories/my_drawer.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -12,8 +13,8 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      appBar: AppBar(title: Text("Home Page")),
-      drawer: Drawer(),
+      appBar: AppBar(title: Text("H O M E P A G E")),
+      drawer: MyDrawer(),
     );
   }
 }

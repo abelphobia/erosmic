@@ -4,7 +4,7 @@ import 'package:erosmic/themes/light_mode.dart';
 
 class ThemeProvider extends ChangeNotifier {
   // for light mode
-  ThemeData _themeData = Lightmode;
+  ThemeData _themeData = lightMode;
 
   // for dark mode
   bool get isDarkMode => _themeData == darkMode;
@@ -20,11 +20,12 @@ class ThemeProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // toggle theme
   void toggleTheme() {
-    if (_themeData == Lightmode) {
+    if (_themeData == lightMode) {
       _themeData = darkMode;
     } else {
-      _themeData = Lightmode;
+      _themeData = lightMode;
     }
   }
 }
