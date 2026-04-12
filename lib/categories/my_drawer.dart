@@ -131,7 +131,7 @@ class MyDrawer extends StatelessWidget {
             ),
           ),
 
-          // settings
+          // settings tile
           Padding(
             padding: EdgeInsets.only(left: 30.0, top: 26.0),
             child: ListTile(

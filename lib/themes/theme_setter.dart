@@ -6,18 +6,15 @@ class ThemeProvider extends ChangeNotifier {
   // for light mode
   ThemeData _themeData = lightMode;
 
-  // for dark mode
-  bool get isDarkMode => _themeData == darkMode;
-
   // get theme
   ThemeData get themeData => _themeData;
+
+  // for dark mode
+  bool get isDarkMode => _themeData == darkMode;
 
   // setting the theme
   set themeData(ThemeData themeData) {
     _themeData = themeData;
-
-    //update ui
-    notifyListeners();
   }
 
   // toggle theme
@@ -27,5 +24,8 @@ class ThemeProvider extends ChangeNotifier {
     } else {
       _themeData = lightMode;
     }
+
+    //update ui
+    notifyListeners();
   }
 }

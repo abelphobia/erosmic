@@ -13,8 +13,91 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      appBar: AppBar(title: Text("H O M E P A G E")),
-      drawer: MyDrawer(),
+      appBar: AppBar(
+        title: const Text("HOMEPAGE"),
+        actions: [
+          // search button
+          IconButton(
+            onPressed: () {
+              showSearch(context: context, delegate: CustomSearchDelegate());
+            },
+            icon: const Icon(Icons.search),
+          ),
+        ],
+      ),
+      drawer: const MyDrawer(),
+    );
+  }
+}
+
+class CustomSearchDelegate extends SearchDelegate {
+  List<String> searchTerms = [
+    // example search terms, will use api data in the future
+    "Rock",
+    "Pop",
+    "Jazz",
+    "Classical",
+    "Hip Hop",
+    "Electronic",
+    "Country",
+    "Reggae",
+    "Blues",
+    "Metal",
+  ];
+
+  @override
+  List<Widget>? buildActions(BuildContext context) {
+    return [
+      IconButton(
+        onPressed: () {
+          query = '';
+        },
+        icon: const Icon(Icons.clear),
+      ),
+    ];
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    return IconButton(
+      icon: const Icon(Icons.arrow_back),
+      onPressed: () {
+        close(context, null);
+      },
+    );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    List<String> matchQuery = [];
+    for (var genre in searchTerms) {
+      if (genre.toLowerCase().contains(query.toLowerCase())) {
+        matchQuery.add(genre);
+      }
+    }
+    return ListView.builder(
+      itemCount: matchQuery.length,
+      itemBuilder: (context, index) {
+        var result = matchQuery[index];
+        return ListTile(title: Text(result));
+      },
+    );
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    List<String> matchQuery = [];
+    for (var genre in searchTerms) {
+      if (genre.toLowerCase().contains(query.toLowerCase())) {
+        matchQuery.add(genre);
+      }
+    }
+    return ListView.builder(
+      itemCount: matchQuery.length,
+      itemBuilder: (context, index) {
+        var result = matchQuery[index];
+        return ListTile(title: Text(result));
+      },
     );
   }
 }
