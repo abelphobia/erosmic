@@ -44,8 +44,9 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# misc
+# vscode
 linux\flutter
 linux\runner
 macos
 windows
+
