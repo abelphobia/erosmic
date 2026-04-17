@@ -7,7 +7,7 @@ class GenrePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      appBar: AppBar(title: Text("G R E N R E")),
+      appBar: AppBar(title: Text("G E N R E S")),
     );
   }
 }
