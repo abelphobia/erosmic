@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:erosmic/categories/my_drawer.dart';
+import 'mini_player.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -26,6 +27,19 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       drawer: const MyDrawer(),
+
+      body: Stack(
+        children: [
+          // will be added later
+          const Center(child: Text('testing front body')),
+
+          // miniplayer
+          const Align(
+            alignment: AlignmentGeometry.bottomCenter,
+            child: MiniPlayerWidget(),
+          ),
+        ],
+      ),
     );
   }
 }
