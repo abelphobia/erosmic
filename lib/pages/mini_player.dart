@@ -7,7 +7,7 @@ class MiniPlayerWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Miniplayer(
-      minHeight: 80,
+      minHeight: 100,
       maxHeight: 1000,
       builder: (height, percentage) {
         if (percentage > 0.6) {
@@ -17,8 +17,8 @@ class MiniPlayerWidget extends StatelessWidget {
           );
         } else {
           return Container(
-            color: Colors.amber,
-            child: const Center(child: Text('mini player')),
+            color: const Color.fromARGB(255, 79, 191, 224),
+            child: const Center(child: Text('Now Playing')),
           );
         }
       },
