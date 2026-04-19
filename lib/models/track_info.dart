@@ -19,7 +19,7 @@ class TrackInfo extends ChangeNotifier {
       album: "House of Balloons",
       genre: "R&B",
       duration: Duration(minutes: 6, seconds: 47),
-      audioPath: "audio/Glass Table Girls.mp3",
+      audioPath: "audio/Glass-Table-Girls.mp3",
     ),
     Song(
       title: "Home",
@@ -28,6 +28,38 @@ class TrackInfo extends ChangeNotifier {
       genre: "Alternative Rock",
       duration: Duration(minutes: 4, seconds: 15),
       audioPath: "audio/Home.mp3",
+    ),
+    Song(
+      title: "You Make Me Feel",
+      artist: "Cobra Starship",
+      album: "Hot Mess",
+      genre: "Pop",
+      duration: Duration(minutes: 3, seconds: 30),
+      audioPath: "audio/You-Make-Me-Feel.mp3",
+    ),
+    Song(
+      title: "What You Need",
+      artist: "The Weeknd",
+      album: "House of Balloons",
+      genre: "R&B",
+      duration: Duration(minutes: 3, seconds: 26),
+      audioPath: "audio/What-You-Need.mp3",
+    ),
+    Song(
+      title: "OMG",
+      artist: "Usher",
+      album: "Raymond v Raymond",
+      genre: "R&B",
+      duration: Duration(minutes: 4, seconds: 29),
+      audioPath: "audio/OMG.mp3",
+    ),
+    Song(
+      title: "Fragments Of Time",
+      artist: "Daft Punk",
+      album: "Random Access Memories",
+      genre: "Electronic",
+      duration: Duration(minutes: 3, seconds: 54),
+      audioPath: "audio/Fragments-Of-Time.mp3",
     ),
   ];
 
