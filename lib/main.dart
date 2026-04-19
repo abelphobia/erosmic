@@ -1,3 +1,4 @@
+import 'package:erosmic/models/track_info.dart';
 import 'package:flutter/material.dart';
 import "package:erosmic/themes/theme_setter.dart";
 import 'package:provider/provider.dart';
@@ -5,8 +6,11 @@ import 'pages/home_page.dart';
 
 void main() {
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => ThemeProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => TrackInfo()),
+      ],
       child: const MyApp(),
     ),
   );
