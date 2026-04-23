@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:erosmic/categories/my_drawer.dart';
-import 'mini_player.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
