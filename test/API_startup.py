@@ -1,26 +1,32 @@
-from flask import Flask, request, jsonify
+import requests
 
-app = Flask(__name__)
+# Define connection details
+server_url = 'http://192.168.0.200:8096'
+username = 'User'
+password = 'Password'
 
-@app.route("/get-user/<user_id>")
-def get_user(user_id):
-    user_data = {
-        "user_id": user_id,
-        "name": "John Doe",
-        "email": "john.doe@example.com"
-    }
+# Build json payload with auth data
+auth_data = {
+    'username': username,
+    'Pw': password
+}
 
-    extra = request.args.get("extra")
-    if extra:
-        user_data["extra"] = extra
+headers = {}
 
-    return jsonify(user_data), 200
+# Build required connection headers
+authorization = 'MediaBrowser Client="other", Device="my-script", DeviceId="some-unique-id", Version="0.0.0"'
 
-@app.route("/create-user", methods=["POST"])
-def create_user():
-    data = request.get_json()
-    
-    return jsonify(data), 201
+headers['Authorization'] = authorization
 
-if __name__ == "__main__":
-    app.run(debug=True)
+# Authenticate to server
+r = requests.post(server_url + '/Users/AuthenticateByName', headers=headers, json=auth_data)
+
+# Retrieve auth token and user id from returned data
+token = r.json().get('AccessToken')
+user_id = r.json().get('User').get('Id')
+
+# Update the headers to include the auth token
+headers['Authorization'] = f'{authorization}, Token="{token}"'
+
+# Requests can be made with
+#requests.get(f'{server_url}/api/endpoint', headers=headers)
