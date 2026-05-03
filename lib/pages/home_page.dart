@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../widgets/mini_player.dart';
+import 'mini_player.dart';
 import 'playlists_page.dart';
 import 'genre_page.dart';
 
