@@ -64,7 +64,7 @@ class TrackInfo extends ChangeNotifier {
   ];
 
   // currently played tracks
-  int _currentTrackIndex = 0;
+  final int _currentTrackIndex = 0;
 
   // Method to change the current track
 
