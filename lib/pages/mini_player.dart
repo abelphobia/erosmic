@@ -1,93 +1,66 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_miniplayer/flutter_miniplayer.dart';
 
-class MiniPlayerWidget extends StatelessWidget {
-  const MiniPlayerWidget({super.key});
+class MiniPlayer extends StatelessWidget {
+  const MiniPlayer({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Miniplayer(
-      minHeight: 100,
-      maxHeight: 1000,
-      builder: (height, percentage) {
-        if (percentage > 0.6) {
-          return Container(
-            color: const Color.fromARGB(255, 84, 172, 245),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  'Expanded Player Testing',
-                  style: TextStyle(fontSize: 24, color: Colors.white),
-                ),
-                const SizedBox(height: 20),
-                const Icon(Icons.music_note, size: 100, color: Colors.white),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.skip_previous),
-                      onPressed: () {
-                        // play/pause functionality will be added later
-                      },
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.play_arrow),
-                      onPressed: () {
-                        // skip next functionality will be added later
-                      },
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.skip_next),
-                      onPressed: () {
-                        // skip previous functionality will be added later
-                      },
-                    ),
-                  ],
-                ),
-              ],
+    return Container(
+      height: 72,
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 8,
+            offset: const Offset(0, -2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: Colors.deepPurple.shade100,
+              borderRadius: BorderRadius.circular(8),
             ),
-          );
-        } else {
-          return Container(
-            color: const Color.fromARGB(255, 79, 191, 224),
+            child: const Icon(Icons.music_note, color: Colors.deepPurple),
+          ),
+          const SizedBox(width: 12),
+          const Expanded(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'smaller player testing',
-                  style: TextStyle(fontSize: 15, color: Colors.white),
+                  "Now Playing",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 5),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.skip_previous),
-                      onPressed: () {
-                        // play/pause functionality will be added later
-                      },
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.play_arrow),
-                      onPressed: () {
-                        // skip next functionality will be added later
-                      },
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.skip_next),
-                      onPressed: () {
-                        // skip previous functionality will be added later
-                      },
-                    ),
-                  ],
+                SizedBox(height: 2),
+                Text(
+                  "Artist Name",
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
-          );
-        }
-      },
+          ),
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.play_arrow),
+          ),
+        ],
+      ),
     );
   }
 }
