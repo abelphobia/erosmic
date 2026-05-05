@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:erosmic/models/track_info.dart';
-import 'package:erosmic/pages/mini_player.dart';
 
 class AllTracksPage extends StatefulWidget {
   const AllTracksPage({super.key});
@@ -31,10 +30,7 @@ class _AllTracksPageState extends State<AllTracksPage> {
         },
 
         // miniplayer
-        child: const Align(
-          alignment: AlignmentGeometry.bottomCenter,
-          child: MiniPlayerWidget(),
-        ),
+        child: const Align(alignment: AlignmentGeometry.bottomCenter),
       ),
     );
   }
