@@ -1,3 +1,7 @@
+import 'package:flutter/material.dart';
+import 'package:erosmic/pages/genre_page.dart';
+import 'package:erosmic/pages/playlists_page.dart';
+
 Widget buildAppDrawer(BuildContext context) {
   return Drawer(
     child: ListView(
@@ -31,9 +35,7 @@ Widget buildAppDrawer(BuildContext context) {
             Navigator.pop(context);
             Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (context) => const PlaylistPage(),
-              ),
+              MaterialPageRoute(builder: (context) => const PlaylistPage()),
             );
           },
         ),
@@ -44,9 +46,7 @@ Widget buildAppDrawer(BuildContext context) {
             Navigator.pop(context);
             Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (context) => const GenrePage(),
-              ),
+              MaterialPageRoute(builder: (context) => const GenrePage()),
             );
           },
         ),
