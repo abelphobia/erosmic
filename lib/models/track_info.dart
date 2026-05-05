@@ -11,7 +11,7 @@ class TrackInfo extends ChangeNotifier {
       album: "B Sides and Rarities",
       genre: "Alternative Rock",
       duration: Duration(minutes: 5, seconds: 45),
-      audioPath: "audio/A320.mp3",
+      audioPath: "assets/audio/A320.mp3",
     ),
     Song(
       title: "Glass Table Girls",
@@ -19,7 +19,7 @@ class TrackInfo extends ChangeNotifier {
       album: "House of Balloons",
       genre: "R&B",
       duration: Duration(minutes: 6, seconds: 47),
-      audioPath: "audio/Glass-Table-Girls.mp3",
+      audioPath: "assets/audio/Glass-Table-Girls.mp3",
     ),
     Song(
       title: "Home",
@@ -27,7 +27,7 @@ class TrackInfo extends ChangeNotifier {
       album: "Daughtry",
       genre: "Alternative Rock",
       duration: Duration(minutes: 4, seconds: 15),
-      audioPath: "audio/Home.mp3",
+      audioPath: "assets/audio/Home.mp3",
     ),
     Song(
       title: "You Make Me Feel",
@@ -35,7 +35,7 @@ class TrackInfo extends ChangeNotifier {
       album: "Hot Mess",
       genre: "Pop",
       duration: Duration(minutes: 3, seconds: 30),
-      audioPath: "audio/You-Make-Me-Feel.mp3",
+      audioPath: "assets/audio/You-Make-Me-Feel.mp3",
     ),
     Song(
       title: "What You Need",
@@ -43,7 +43,7 @@ class TrackInfo extends ChangeNotifier {
       album: "House of Balloons",
       genre: "R&B",
       duration: Duration(minutes: 3, seconds: 26),
-      audioPath: "audio/What-You-Need.mp3",
+      audioPath: "assets/audio/What-You-Need.mp3",
     ),
     Song(
       title: "OMG",
@@ -51,7 +51,7 @@ class TrackInfo extends ChangeNotifier {
       album: "Raymond v Raymond",
       genre: "R&B",
       duration: Duration(minutes: 4, seconds: 29),
-      audioPath: "audio/OMG.mp3",
+      audioPath: "assets/audio/OMG.mp3",
     ),
     Song(
       title: "Fragments Of Time",
@@ -59,7 +59,7 @@ class TrackInfo extends ChangeNotifier {
       album: "Random Access Memories",
       genre: "Electronic",
       duration: Duration(minutes: 3, seconds: 54),
-      audioPath: "audio/Fragments-Of-Time.mp3",
+      audioPath: "assets/audio/Fragments-Of-Time.mp3",
     ),
   ];
 
