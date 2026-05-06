@@ -175,7 +175,7 @@ class _HomePageState extends State<HomePage> {
         padding: EdgeInsets.zero,
         children: [
           const DrawerHeader(
-            decoration: BoxDecoration(color: Colors.deepPurple),
+            decoration: BoxDecoration(color: Color.fromARGB(255, 71, 131, 221)),
             child: Align(
               alignment: Alignment.bottomLeft,
               child: Text(
@@ -283,7 +283,7 @@ class _HomePageState extends State<HomePage> {
                       children: [
                         const Icon(
                           Icons.music_note,
-                          color: Colors.deepPurple,
+                          color: Color.fromARGB(255, 71, 131, 221),
                           size: 28,
                         ),
                         const SizedBox(height: 6),
