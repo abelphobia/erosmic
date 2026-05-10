@@ -73,7 +73,6 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Top bar with centered title
               Builder(
                 builder: (context) => Stack(
                   alignment: Alignment.center,
@@ -104,10 +103,8 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
               ),
-
               const SizedBox(height: 20),
 
-              // Greeting
               Text(
                 getGreeting(),
                 style: const TextStyle(
@@ -115,10 +112,8 @@ class _HomePageState extends State<HomePage> {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-
               const SizedBox(height: 18),
 
-              // Search bar
               TextField(
                 controller: _searchController,
                 onChanged: (value) {
@@ -136,17 +131,13 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
-
               const SizedBox(height: 28),
 
-              // Recently Added (homepage only, not clickable)
               buildSectionTitle("Recently Added"),
               const SizedBox(height: 14),
               buildStaticHorizontalCards(filteredRecentlyAdded),
-
               const SizedBox(height: 28),
 
-              // Playlist (clickable)
               buildSectionHeader(
                 context,
                 "Playlist",
@@ -158,10 +149,8 @@ class _HomePageState extends State<HomePage> {
                 filteredPlaylists,
                 const PlaylistPage(),
               ),
-
               const SizedBox(height: 28),
 
-              // Genre (clickable)
               buildSectionHeader(
                 context,
                 "Genre",
@@ -173,7 +162,6 @@ class _HomePageState extends State<HomePage> {
                 filteredGenres,
                 const GenrePage(),
               ),
-
               const SizedBox(height: 30),
             ],
           ),
@@ -273,7 +261,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // For Recently Added only (not clickable)
   Widget buildStaticHorizontalCards(List<String> items) {
     return SizedBox(
       height: 150,
@@ -321,7 +308,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // For Playlist and Genre (clickable)
   Widget buildHorizontalCards(
     BuildContext context,
     List<String> items,
