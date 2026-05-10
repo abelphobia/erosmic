@@ -15,27 +15,33 @@ class _AllTracksPageState extends State<AllTracksPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      appBar: AppBar(title: Text("ALL TRACKS")),
+      appBar: AppBar(
+        title: const Text("ALL TRACKS"),
+        centerTitle: true,
+      ),
       body: Consumer<TrackInfo>(
         builder: (context, trackInfo, child) {
+          if (trackInfo.tracks.isEmpty) {
+            return const Center(
+              child: Text("No tracks available"),
+            );
+          }
+
           return ListView.builder(
             itemCount: trackInfo.tracks.length,
             itemBuilder: (context, index) {
               final track = trackInfo.tracks[index];
+
               return ListTile(
+                leading: const Icon(Icons.music_note),
                 title: Text(track.title),
                 subtitle: Text(track.artist),
               );
             },
           );
         },
-
-        // miniplayer
-        child: const Align(
-          alignment: AlignmentGeometry.bottomCenter,
-          child: MiniPlayerWidget(),
-        ),
       ),
+      bottomNavigationBar: const MiniPlayer(),
     );
   }
 }
