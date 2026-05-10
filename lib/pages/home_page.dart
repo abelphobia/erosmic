@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import 'mini_player.dart';
-import 'playlists_page.dart';
-import 'genre_page.dart';
+import 'package:erosmic/pages/mini_player.dart';
+import 'package:erosmic/pages/playlists_page.dart';
+import 'package:erosmic/pages/genre_page.dart';
+import 'package:erosmic/models/track_info.dart';
+import 'package:provider/provider.dart';
+import 'package:erosmic/models/song.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -13,42 +16,37 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final TextEditingController _searchController = TextEditingController();
 
-  final List<String> recentlyAdded = [
-    "Blinding Lights",
-    "Calm Nights",
-    "Golden Hour",
-    "Ocean Drive",
-  ];
-
-  final List<String> playlists = [
-    "Workout Mix",
-    "Study Playlist",
-    "Chill Vibes",
-    "Road Trip",
-  ];
-
-  final List<String> genres = [
-    "Hip-Hop",
-    "Pop",
-    "Jazz",
-    "Afrobeats",
-  ];
-
   String getGreeting() {
     final hour = DateTime.now().hour;
-    if (hour < 12) {
-      return "Good Morning";
-    } else if (hour < 17) {
-      return "Good Afternoon";
-    } else {
-      return "Good Evening";
-    }
+    if (hour < 12) return "Good Morning";
+    if (hour < 17) return "Good Afternoon";
+    return "Good Evening";
   }
 
-  List<String> filterList(List<String> items) {
+  List<Song> getRecentlyAdded(List<Song> tracks) => tracks.take(5).toList();
+
+  List<String> getUniqueGenres(List<Song> tracks) {
+    return tracks.map((t) => t.genre).toSet().toList();
+  }
+
+  List<String> getUniqueAlbums(List<Song> tracks) {
+    return tracks.map((t) => t.album).toSet().toList();
+  }
+
+  List<Song> filterTracks(List<Song> tracks) {
+    final query = _searchController.text.toLowerCase();
+    if (query.isEmpty) return tracks;
+
+    return tracks.where((t) {
+      return t.title.toLowerCase().contains(query) ||
+          t.artist.toLowerCase().contains(query);
+    }).toList();
+  }
+
+  List<String> filterStrings(List<String> items) {
     final query = _searchController.text.toLowerCase();
     if (query.isEmpty) return items;
-    return items.where((item) => item.toLowerCase().contains(query)).toList();
+    return items.where((s) => s.toLowerCase().contains(query)).toList();
   }
 
   @override
@@ -59,9 +57,12 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final filteredRecentlyAdded = filterList(recentlyAdded);
-    final filteredPlaylists = filterList(playlists);
-    final filteredGenres = filterList(genres);
+    final trackInfo = context.watch<TrackInfo>();
+    final allTracks = trackInfo.tracks;
+
+    final filteredRecentlyAdded = filterTracks(getRecentlyAdded(allTracks));
+    final filteredAlbums = filterStrings(getUniqueAlbums(allTracks));
+    final filteredGenres = filterStrings(getUniqueGenres(allTracks));
 
     return Scaffold(
       backgroundColor: Colors.grey[200],
@@ -73,6 +74,7 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Top bar
               Builder(
                 builder: (context) => Stack(
                   alignment: Alignment.center,
@@ -81,9 +83,7 @@ class _HomePageState extends State<HomePage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         IconButton(
-                          onPressed: () {
-                            Scaffold.of(context).openDrawer();
-                          },
+                          onPressed: () => Scaffold.of(context).openDrawer(),
                           icon: const Icon(Icons.menu, size: 30),
                         ),
                         IconButton(
@@ -103,6 +103,7 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
               ),
+
               const SizedBox(height: 20),
 
               Text(
@@ -112,13 +113,12 @@ class _HomePageState extends State<HomePage> {
                   fontWeight: FontWeight.w600,
                 ),
               ),
+
               const SizedBox(height: 18),
 
               TextField(
                 controller: _searchController,
-                onChanged: (value) {
-                  setState(() {});
-                },
+                onChanged: (_) => setState(() {}),
                 decoration: InputDecoration(
                   hintText: "Search",
                   prefixIcon: const Icon(Icons.search),
@@ -131,37 +131,36 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
+
               const SizedBox(height: 28),
 
+              // Recently Added
               buildSectionTitle("Recently Added"),
               const SizedBox(height: 14),
               buildStaticHorizontalCards(filteredRecentlyAdded),
+
               const SizedBox(height: 28),
 
-              buildSectionHeader(
-                context,
-                "Playlist",
-                const PlaylistPage(),
-              ),
+              // Albums
+              buildSectionHeader(context, "Albums", const PlaylistPage()),
               const SizedBox(height: 14),
               buildHorizontalCards(
                 context,
-                filteredPlaylists,
+                filteredAlbums,
                 const PlaylistPage(),
               ),
+
               const SizedBox(height: 28),
 
-              buildSectionHeader(
-                context,
-                "Genre",
-                const GenrePage(),
-              ),
+              // Genre
+              buildSectionHeader(context, "Genre", const GenrePage()),
               const SizedBox(height: 14),
               buildHorizontalCards(
                 context,
                 filteredGenres,
                 const GenrePage(),
               ),
+
               const SizedBox(height: 30),
             ],
           ),
@@ -176,7 +175,9 @@ class _HomePageState extends State<HomePage> {
         padding: EdgeInsets.zero,
         children: [
           const DrawerHeader(
-            decoration: BoxDecoration(color: Colors.deepPurple),
+            decoration: BoxDecoration(
+              color: Color.fromARGB(255, 71, 131, 221),
+            ),
             child: Align(
               alignment: Alignment.bottomLeft,
               child: Text(
@@ -192,20 +193,16 @@ class _HomePageState extends State<HomePage> {
           ListTile(
             leading: const Icon(Icons.home),
             title: const Text("Homepage"),
-            onTap: () {
-              Navigator.pop(context);
-            },
+            onTap: () => Navigator.pop(context),
           ),
           ListTile(
             leading: const Icon(Icons.queue_music),
-            title: const Text("Playlist"),
+            title: const Text("Albums"),
             onTap: () {
               Navigator.pop(context);
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => const PlaylistPage(),
-                ),
+                MaterialPageRoute(builder: (_) => const PlaylistPage()),
               );
             },
           ),
@@ -216,9 +213,7 @@ class _HomePageState extends State<HomePage> {
               Navigator.pop(context);
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => const GenrePage(),
-                ),
+                MaterialPageRoute(builder: (_) => const GenrePage()),
               );
             },
           ),
@@ -242,7 +237,7 @@ class _HomePageState extends State<HomePage> {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => page),
+          MaterialPageRoute(builder: (_) => page),
         );
       },
       child: Row(
@@ -261,7 +256,8 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget buildStaticHorizontalCards(List<String> items) {
+  // Recently Added — Song objects, not clickable
+  Widget buildStaticHorizontalCards(List<Song> items) {
     return SizedBox(
       height: 150,
       child: items.isEmpty
@@ -274,8 +270,10 @@ class _HomePageState extends State<HomePage> {
           : ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: items.length,
-              separatorBuilder: (context, index) => const SizedBox(width: 14),
+              separatorBuilder: (_, __) => const SizedBox(width: 14),
               itemBuilder: (context, index) {
+                final song = items[index];
+
                 return Container(
                   width: 120,
                   decoration: BoxDecoration(
@@ -289,17 +287,39 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ],
                   ),
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        items[index],
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.music_note,
+                          color: Color.fromARGB(255, 71, 131, 221),
+                          size: 28,
                         ),
-                      ),
+                        const SizedBox(height: 6),
+                        Text(
+                          song.title,
+                          textAlign: TextAlign.center,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          song.artist,
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 );
@@ -308,6 +328,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  // Albums / Genres — String labels, clickable
   Widget buildHorizontalCards(
     BuildContext context,
     List<String> items,
@@ -325,13 +346,13 @@ class _HomePageState extends State<HomePage> {
           : ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: items.length,
-              separatorBuilder: (context, index) => const SizedBox(width: 14),
+              separatorBuilder: (_, __) => const SizedBox(width: 14),
               itemBuilder: (context, index) {
                 return GestureDetector(
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => page),
+                      MaterialPageRoute(builder: (_) => page),
                     );
                   },
                   child: Container(
@@ -354,7 +375,7 @@ class _HomePageState extends State<HomePage> {
                           items[index],
                           textAlign: TextAlign.center,
                           style: const TextStyle(
-                            fontSize: 16,
+                            fontSize: 15,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
