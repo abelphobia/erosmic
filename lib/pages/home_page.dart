@@ -5,6 +5,9 @@ import 'package:erosmic/pages/genre_page.dart';
 import 'package:erosmic/models/track_info.dart';
 import 'package:provider/provider.dart';
 import 'package:erosmic/models/song.dart';
+import 'package:erosmic/pages/all_tracks_page.dart';
+import 'package:erosmic/pages/settings_page.dart';
+import 'package:erosmic/categories/my_drawer.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -66,7 +69,7 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       backgroundColor: Colors.grey[200],
-      drawer: buildAppDrawer(context),
+      drawer: const MyDrawer(),
       bottomNavigationBar: const MiniPlayer(),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -118,9 +121,17 @@ class _HomePageState extends State<HomePage> {
 
               TextField(
                 controller: _searchController,
-                onChanged: (_) => setState(() {}),
+                readOnly: true,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const AllTracksPage(),
+                    ),
+                  );
+                },
                 decoration: InputDecoration(
-                  hintText: "Search",
+                  hintText: "Search songs",
                   prefixIcon: const Icon(Icons.search),
                   filled: true,
                   fillColor: Colors.white,
@@ -162,6 +173,29 @@ class _HomePageState extends State<HomePage> {
               ),
 
               const SizedBox(height: 30),
+
+
+              // All Songs
+              buildSectionHeader(context, "All Songs", const AllTracksPage()),
+              const SizedBox(height: 14),
+              buildHorizontalCards(
+                context,
+                const ["Browse Songs", "Artists", "Albums", "Genres"],
+                const AllTracksPage(),
+              ),
+
+              const SizedBox(height: 28),
+
+              // Settings
+              buildSectionHeader(context, "Settings", const SettingsPage()),
+              const SizedBox(height: 14),
+              buildHorizontalCards(
+                context,
+                const ["Theme", "Account", "Audio", "Preferences"],
+                const SettingsPage(),
+              ),
+
+              const SizedBox(height: 28),
             ],
           ),
         ),
