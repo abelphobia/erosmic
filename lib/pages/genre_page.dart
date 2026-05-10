@@ -4,21 +4,12 @@ class GenrePage extends StatelessWidget {
   const GenrePage({super.key});
 
   @override
+  // FIX LATER
   Widget build(BuildContext context) {
-    final items = [
-      "Hip-Hop",
-      "Pop",
-      "Jazz",
-      "Afrobeats",
-      "R&B",
-      "Classical",
-    ];
+    final items = ["Hip-Hop", "Pop", "Jazz", "Afrobeats", "R&B", "Classical"];
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Genre"),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text("Genre"), centerTitle: true),
       body: ListView.builder(
         itemCount: items.length,
         itemBuilder: (context, index) {
