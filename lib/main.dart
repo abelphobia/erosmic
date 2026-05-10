@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Erosmic',
-      home: HomePage(),
+      home: const HomePage(),
       theme: Provider.of<ThemeProvider>(context).themeData,
     );
   }
