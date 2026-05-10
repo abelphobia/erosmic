@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:erosmic/pages/genre_page.dart';
 import 'package:erosmic/pages/playlists_page.dart';
+import 'package:erosmic/pages/all_tracks_page.dart';
+import 'package:erosmic/pages/settings_page.dart';
 
 class MyDrawer extends StatelessWidget {
   const MyDrawer({super.key});
@@ -13,7 +15,7 @@ class MyDrawer extends StatelessWidget {
         children: [
           const DrawerHeader(
             decoration: BoxDecoration(
-              color: Colors.deepPurple,
+              color: Color.fromARGB(255, 71, 131, 221),
             ),
             child: Align(
               alignment: Alignment.bottomLeft,
@@ -36,14 +38,12 @@ class MyDrawer extends StatelessWidget {
           ),
           ListTile(
             leading: const Icon(Icons.queue_music),
-            title: const Text("Playlist"),
+            title: const Text("Albums"),
             onTap: () {
               Navigator.pop(context);
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => const PlaylistPage(),
-                ),
+                MaterialPageRoute(builder: (_) => const PlaylistPage()),
               );
             },
           ),
@@ -54,9 +54,29 @@ class MyDrawer extends StatelessWidget {
               Navigator.pop(context);
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => const GenrePage(),
-                ),
+                MaterialPageRoute(builder: (_) => const GenrePage()),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.music_note),
+            title: const Text("All Songs"),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AllTracksPage()),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.settings),
+            title: const Text("Settings"),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const SettingsPage()),
               );
             },
           ),
