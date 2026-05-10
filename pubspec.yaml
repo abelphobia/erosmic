@@ -29,6 +29,8 @@ environment:
 # versions available, run `flutter pub outdated`.
 dependencies:
   just_audio: ^0.9.18
+  http: ^1.2.0
+  on_audio_query: ^2.7.0
   flutter:
     sdk: flutter
 
