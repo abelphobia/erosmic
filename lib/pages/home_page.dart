@@ -304,7 +304,7 @@ class _HomePageState extends State<HomePage> {
           : ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: items.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 14),
+              separatorBuilder: (_, _) => const SizedBox(width: 14),
               itemBuilder: (context, index) {
                 final song = items[index];
 
@@ -380,7 +380,7 @@ class _HomePageState extends State<HomePage> {
           : ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: items.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 14),
+              separatorBuilder: (_, _) => const SizedBox(width: 14),
               itemBuilder: (context, index) {
                 return GestureDetector(
                   onTap: () {
