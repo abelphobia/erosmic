@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import "package:erosmic/themes/theme_setter.dart";
 import 'package:provider/provider.dart';
 import 'pages/home_page.dart';
+import 'playlists_page.dart';
+import 'genre_page.dart';
 
 void main() {
   runApp(
