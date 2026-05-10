@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:erosmic/models/track_info.dart';
+import 'package:erosmic/models/song.dart';
+import 'package:erosmic/pages/mini_player.dart';
 
 class AllTracksPage extends StatefulWidget {
   const AllTracksPage({super.key});
@@ -35,6 +37,8 @@ class _AllTracksPageState extends State<AllTracksPage> {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(title: const Text("ALL SONGS"), centerTitle: true),
+      // Miniplayer location
+      bottomNavigationBar: const MiniPlayer(),
       body: Consumer<TrackInfo>(
         builder: (context, trackInfo, child) {
           final filteredTracks = filterTracks(trackInfo.tracks);
@@ -78,11 +82,7 @@ class _AllTracksPageState extends State<AllTracksPage> {
             ],
           );
         },
-
-        // miniplayer
-        child: const Align(alignment: AlignmentGeometry.bottomCenter),
       ),
-      bottomNavigationBar: const MiniPlayer(),
     );
   }
 }
