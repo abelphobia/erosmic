@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:erosmic/pages/genre_page.dart';
 import 'package:erosmic/pages/playlists_page.dart';
 import 'package:erosmic/pages/all_tracks_page.dart';
 import 'package:erosmic/pages/settings_page.dart';
+import 'package:erosmic/models/track_info.dart';
 
 class MyDrawer extends StatelessWidget {
   const MyDrawer({super.key});
@@ -76,6 +78,14 @@ class MyDrawer extends StatelessWidget {
                 context,
                 MaterialPageRoute(builder: (_) => const SettingsPage()),
               );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.file_upload),
+            title: const Text("Import Local Songs"),
+            onTap: () {
+              Navigator.pop(context);
+              context.read<TrackInfo>().pickLocalFiles();
             },
           ),
         ],
