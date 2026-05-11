@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
 import 'package:erosmic/models/track_info.dart';
+import 'package:erosmic/models/song.dart';
 
 class MiniPlayer extends StatefulWidget {
   const MiniPlayer({super.key});
@@ -21,11 +22,24 @@ class _MiniPlayerState extends State<MiniPlayer> {
 
   Future<void> _loadPlaylist() async {
     final trackInfo = context.read<TrackInfo>();
+
     final playlist = ConcatenatingAudioSource(
-      children: trackInfo.tracks
-          .map((song) => AudioSource.asset(song.audioPath, tag: song))
-          .toList(),
+      children: trackInfo.tracks.map((song) {
+        // Local file from phone storage
+        if (song.sourceType == AudioSourceType.local &&
+            song.audioPath != null) {
+          return AudioSource.uri(Uri.parse(song.audioPath!), tag: song);
+        }
+        // Jellyfin stream
+        if (song.sourceType == AudioSourceType.stream &&
+            song.streamUrl != null) {
+          return AudioSource.uri(Uri.parse(song.streamUrl!), tag: song);
+        }
+        // Fallback — should never hit this but prevents a crash
+        return AudioSource.uri(Uri.parse(''), tag: song);
+      }).toList(),
     );
+
     await _player.setAudioSource(playlist);
   }
 
@@ -61,18 +75,36 @@ class _MiniPlayerState extends State<MiniPlayer> {
         ),
         child: Row(
           children: [
-            // Album art placeholder
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: Colors.deepPurple.shade100,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Icon(
-                Icons.music_note,
-                color: Color.fromARGB(255, 21, 123, 170),
-              ),
+            // Album art — shows network image for Jellyfin, icon for local
+            StreamBuilder<SequenceState?>(
+              stream: _player.sequenceStateStream,
+              builder: (context, snapshot) {
+                final song = snapshot.data?.currentSource?.tag as Song?;
+                return Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: Colors.deepPurple.shade100,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: song?.albumArtUrl != null
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.network(
+                            song!.albumArtUrl!,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, _, _) => const Icon(
+                              Icons.music_note,
+                              color: Color.fromARGB(255, 21, 123, 170),
+                            ),
+                          ),
+                        )
+                      : const Icon(
+                          Icons.music_note,
+                          color: Color.fromARGB(255, 21, 123, 170),
+                        ),
+                );
+              },
             ),
             const SizedBox(width: 12),
 
@@ -81,7 +113,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
               child: StreamBuilder<SequenceState?>(
                 stream: _player.sequenceStateStream,
                 builder: (context, snapshot) {
-                  final song = snapshot.data?.currentSource?.tag;
+                  final song = snapshot.data?.currentSource?.tag as Song?;
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -95,13 +127,47 @@ class _MiniPlayerState extends State<MiniPlayer> {
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 2),
-                      Text(
-                        song?.artist ?? "—",
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey,
-                        ),
-                        overflow: TextOverflow.ellipsis,
+                      Row(
+                        children: [
+                          // Source indicator badge
+                          if (song != null)
+                            Container(
+                              margin: const EdgeInsets.only(right: 4),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 4,
+                                vertical: 1,
+                              ),
+                              decoration: BoxDecoration(
+                                color: song.sourceType == AudioSourceType.stream
+                                    ? Colors.deepPurple.shade100
+                                    : Colors.green.shade100,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                song.sourceType == AudioSourceType.stream
+                                    ? "Jellyfin"
+                                    : "Local",
+                                style: TextStyle(
+                                  fontSize: 9,
+                                  color:
+                                      song.sourceType == AudioSourceType.stream
+                                      ? Colors.deepPurple
+                                      : Colors.green.shade700,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          Expanded(
+                            child: Text(
+                              song?.artist ?? "—",
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   );
@@ -150,7 +216,7 @@ class _FullScreenPlayerState extends State<FullScreenPlayer> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 71, 158, 230),
+      backgroundColor: const Color.fromARGB(255, 71, 158, 230),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -174,25 +240,44 @@ class _FullScreenPlayerState extends State<FullScreenPlayer> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // Album art
-            Container(
-              width: 280,
-              height: 280,
-              decoration: BoxDecoration(
-                color: Colors.deepPurple.shade300,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.4),
-                    blurRadius: 30,
-                    offset: const Offset(0, 10),
+            StreamBuilder<SequenceState?>(
+              stream: player.sequenceStateStream,
+              builder: (context, snapshot) {
+                final song = snapshot.data?.currentSource?.tag as Song?;
+                return Container(
+                  width: 280,
+                  height: 280,
+                  decoration: BoxDecoration(
+                    color: Colors.deepPurple.shade300,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.4),
+                        blurRadius: 30,
+                        offset: const Offset(0, 10),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              child: const Icon(
-                Icons.music_note,
-                size: 100,
-                color: Colors.white,
-              ),
+                  child: song?.albumArtUrl != null
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: Image.network(
+                            song!.albumArtUrl!,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, _, _) => const Icon(
+                              Icons.music_note,
+                              size: 100,
+                              color: Colors.white,
+                            ),
+                          ),
+                        )
+                      : const Icon(
+                          Icons.music_note,
+                          size: 100,
+                          color: Colors.white,
+                        ),
+                );
+              },
             ),
             const SizedBox(height: 40),
 
@@ -200,7 +285,7 @@ class _FullScreenPlayerState extends State<FullScreenPlayer> {
             StreamBuilder<SequenceState?>(
               stream: player.sequenceStateStream,
               builder: (context, snapshot) {
-                final song = snapshot.data?.currentSource?.tag;
+                final song = snapshot.data?.currentSource?.tag as Song?;
                 return Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -223,6 +308,29 @@ class _FullScreenPlayerState extends State<FullScreenPlayer> {
                             fontSize: 16,
                           ),
                         ),
+                        // Source badge
+                        if (song != null)
+                          Container(
+                            margin: const EdgeInsets.only(top: 4),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white24,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              song.sourceType == AudioSourceType.stream
+                                  ? "Jellyfin"
+                                  : "Local",
+                              style: const TextStyle(
+                                color: Colors.white70,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
                       ],
                     ),
                     const Icon(Icons.favorite_border, color: Colors.white60),
