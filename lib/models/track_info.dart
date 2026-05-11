@@ -1,73 +1,94 @@
 import 'package:flutter/material.dart';
 import 'package:erosmic/models/song.dart';
+import 'package:erosmic/services/jellyfin_service.dart';
+import 'package:file_picker/file_picker.dart';
 
 class TrackInfo extends ChangeNotifier {
-  // This will be changed to use local files and api data in the future
+  final JellyfinService _service = JellyfinService();
 
-  final List<Song> _tracks = [
-    Song(
-      title: "A320",
-      artist: "Foo Fighters",
-      album: "B Sides and Rarities",
-      genre: "Alternative Rock",
-      duration: Duration(minutes: 5, seconds: 45),
-      audioPath: "assets/audio/A320.mp3",
-    ),
-    Song(
-      title: "Glass Table Girls",
-      artist: "The Weeknd",
-      album: "House of Balloons",
-      genre: "R&B",
-      duration: Duration(minutes: 6, seconds: 47),
-      audioPath: "assets/audio/Glass-Table-Girls.mp3",
-    ),
-    Song(
-      title: "Home",
-      artist: "Daughtry",
-      album: "Daughtry",
-      genre: "Alternative Rock",
-      duration: Duration(minutes: 4, seconds: 15),
-      audioPath: "assets/audio/Home.mp3",
-    ),
-    Song(
-      title: "You Make Me Feel",
-      artist: "Cobra Starship",
-      album: "Hot Mess",
-      genre: "Pop",
-      duration: Duration(minutes: 3, seconds: 30),
-      audioPath: "assets/audio/You-Make-Me-Feel.mp3",
-    ),
-    Song(
-      title: "What You Need",
-      artist: "The Weeknd",
-      album: "House of Balloons",
-      genre: "R&B",
-      duration: Duration(minutes: 3, seconds: 26),
-      audioPath: "assets/audio/What-You-Need.mp3",
-    ),
-    Song(
-      title: "OMG",
-      artist: "Usher",
-      album: "Raymond v Raymond",
-      genre: "R&B",
-      duration: Duration(minutes: 4, seconds: 29),
-      audioPath: "assets/audio/OMG.mp3",
-    ),
-    Song(
-      title: "Fragments Of Time",
-      artist: "Daft Punk",
-      album: "Random Access Memories",
-      genre: "Electronic",
-      duration: Duration(minutes: 3, seconds: 54),
-      audioPath: "assets/audio/Fragments-Of-Time.mp3",
-    ),
-  ];
-
-  // currently played tracks
-  final int _currentTrackIndex = 0;
-
-  // Method to change the current track
+  List<Song> _tracks = [];
+  List<String> _genres = [];
+  List<Map<String, String>> _albums = [];
+  bool isLoading = false;
+  String? error;
 
   List<Song> get tracks => _tracks;
-  int get currentTrackIndex => _currentTrackIndex;
+  List<String> get genres => _genres;
+  List<Map<String, String>> get albums => _albums;
+
+  List<Song> get localTracks =>
+      _tracks.where((t) => t.sourceType == AudioSourceType.local).toList();
+
+  List<Song> get streamTracks =>
+      _tracks.where((t) => t.sourceType == AudioSourceType.stream).toList();
+
+  // Fetch Jellyfin tracks on startup
+  Future<void> fetchAll() async {
+    isLoading = true;
+    error = null;
+    notifyListeners();
+
+    try {
+      final results = await Future.wait([
+        _service.fetchTracks(),
+        _service.fetchGenres(),
+        _service.fetchAlbums(),
+      ]);
+
+      _tracks = results[0] as List<Song>;
+      _genres = results[1] as List<String>;
+      _albums = results[2] as List<Map<String, String>>;
+    } catch (e) {
+      error = e.toString();
+    }
+
+    isLoading = false;
+    notifyListeners();
+  }
+
+  // Called when user wants to add local files
+  Future<void> pickLocalFiles() async {
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.audio,
+        allowMultiple: true, // let user pick multiple songs at once
+      );
+
+      if (result == null || result.files.isEmpty) return;
+
+      final newLocalTracks = result.files
+          .where((file) => file.path != null)
+          .map(
+            (file) => Song.fromLocal(
+              id: file.identifier ?? file.path!,
+              title: _cleanFileName(file.name),
+              artist: "Unknown",
+              album: "Unknown",
+              genre: "Unknown",
+              duration: Duration.zero,
+              audioPath: file.path!,
+            ),
+          )
+          .toList();
+
+      // Add to tracks without duplicates
+      for (final track in newLocalTracks) {
+        if (!_tracks.any((t) => t.audioPath == track.audioPath)) {
+          _tracks.add(track);
+        }
+      }
+
+      notifyListeners();
+    } catch (e) {
+      error = e.toString();
+      notifyListeners();
+    }
+  }
+
+  // Remove "song.mp3" → "song"
+  String _cleanFileName(String fileName) {
+    return fileName.contains('.')
+        ? fileName.substring(0, fileName.lastIndexOf('.'))
+        : fileName;
+  }
 }
