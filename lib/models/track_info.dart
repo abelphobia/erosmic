@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:erosmic/models/song.dart';
 import 'package:erosmic/services/jellyfin_service.dart';
+import 'package:erosmic/services/local_service.dart';
 import 'package:file_picker/file_picker.dart';
 
 class TrackInfo extends ChangeNotifier {
   final JellyfinService _service = JellyfinService();
+  final LocalAudioService _localService = LocalAudioService();
 
   List<Song> _tracks = [];
   List<String> _genres = [];
@@ -24,7 +26,6 @@ class TrackInfo extends ChangeNotifier {
   List<Song> get streamTracks =>
       _tracks.where((t) => t.sourceType == AudioSourceType.stream).toList();
 
-  // ← now correctly outside fetchAll
   void playSong(int index) {
     _currentTrackIndex = index;
     notifyListeners();
@@ -53,6 +54,29 @@ class TrackInfo extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Loads ALL local device songs via on_audio_query (full metadata)
+  Future<void> loadLocalTracks() async {
+    isLoading = true;
+    error = null;
+    notifyListeners();
+
+    try {
+      final localSongs = await _localService.fetchLocalSongs();
+
+      for (final track in localSongs) {
+        if (!_tracks.any((t) => t.audioPath == track.audioPath)) {
+          _tracks.add(track);
+        }
+      }
+    } catch (e) {
+      error = e.toString();
+    }
+
+    isLoading = false;
+    notifyListeners();
+  }
+
+  // Fallback: manual file picker (used if user wants to pick specific files)
   Future<void> pickLocalFiles() async {
     try {
       final result = await FilePicker.platform.pickFiles(
@@ -68,9 +92,9 @@ class TrackInfo extends ChangeNotifier {
             (file) => Song.fromLocal(
               id: file.identifier ?? file.path!,
               title: _cleanFileName(file.name),
-              artist: "Unknown",
-              album: "Unknown",
-              genre: "Unknown",
+              artist: 'Unknown Artist',
+              album: 'Unknown Album',
+              genre: 'Unknown Genre',
               duration: Duration.zero,
               audioPath: file.path!,
             ),
