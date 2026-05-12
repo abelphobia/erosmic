@@ -13,28 +13,24 @@ class MiniPlayer extends StatefulWidget {
 
 class _MiniPlayerState extends State<MiniPlayer> {
   final AudioPlayer _player = AudioPlayer();
-  late TrackInfo _trackInfo;
+  TrackInfo? _trackInfo;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+
+    // Remove old listener if already attached
+    _trackInfo?.removeListener(_onTrackChanged);
+
+    // Attach new listener to updated TrackInfo
     _trackInfo = context.read<TrackInfo>();
-  }
+    _trackInfo!.addListener(_onTrackChanged);
 
-  @override
-  void initState() {
-    super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _trackInfo = context.read<TrackInfo>();
-      _trackInfo.addListener(_onTrackChanged);
-      // Load the playlist once on startup
-      _loadPlaylist();
-    });
+    _loadPlaylist();
   }
 
   Future<void> _loadPlaylist() async {
-    final tracks = _trackInfo.tracks;
+    final tracks = _trackInfo?.tracks ?? [];
     if (tracks.isEmpty) return;
 
     final playlist = ConcatenatingAudioSource(
@@ -42,7 +38,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
         if (song.sourceType == AudioSourceType.local) {
           return AudioSource.file(song.audioPath!, tag: song);
         } else {
-          return AudioSource.uri(Uri.parse(song.audioPath!), tag: song);
+          return AudioSource.uri(Uri.parse(song.streamUrl!), tag: song);
         }
       }).toList(),
     );
@@ -51,12 +47,14 @@ class _MiniPlayerState extends State<MiniPlayer> {
   }
 
   void _onTrackChanged() async {
-    final index = _trackInfo.currentTrackIndex;
-    final tracks = _trackInfo.tracks;
+    final trackInfo = _trackInfo;
+    if (trackInfo == null) return;
 
+    final index = trackInfo.currentTrackIndex;
+    final tracks = trackInfo.tracks;
     if (tracks.isEmpty) return;
 
-    // Reload the playlist in case new tracks were added (e.g. local files)
+    // Reload playlist if tracks were added
     if (_player.sequence == null || _player.sequence!.length != tracks.length) {
       await _loadPlaylist();
     }
@@ -69,7 +67,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
 
   @override
   void dispose() {
-    _trackInfo.removeListener(_onTrackChanged);
+    _trackInfo?.removeListener(_onTrackChanged);
     _player.dispose();
     super.dispose();
   }
@@ -199,7 +197,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
               ),
             ),
 
-            // Play / Pause button
+            // Play / Pause
             StreamBuilder<PlayerState>(
               stream: _player.playerStateStream,
               builder: (context, snapshot) {
@@ -236,6 +234,138 @@ class FullScreenPlayer extends StatefulWidget {
 
 class _FullScreenPlayerState extends State<FullScreenPlayer> {
   AudioPlayer get player => widget.player;
+  // queue model
+
+  void _showQueue(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF1E1E1E),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) {
+        return StreamBuilder<SequenceState?>(
+          stream: player.sequenceStateStream,
+          builder: (context, snapshot) {
+            final sequence = player.sequence ?? [];
+            final currentIndex = player.currentIndex ?? 0;
+
+            if (sequence.isEmpty) {
+              return const SizedBox(
+                height: 200,
+                child: Center(
+                  child: Text(
+                    "Queue is empty",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              );
+            }
+
+            return SizedBox(
+              height: 500,
+              child: Column(
+                children: [
+                  const SizedBox(height: 12),
+
+                  Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: Colors.white24,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  const Text(
+                    "Up Next",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: sequence.length,
+                      itemBuilder: (context, index) {
+                        final source = sequence[index];
+                        final song = source.tag as Song;
+
+                        final isCurrent = index == currentIndex;
+
+                        return ListTile(
+                          leading: ClipRRect(
+                            borderRadius: BorderRadius.circular(6),
+                            child: song.albumArtUrl != null
+                                ? Image.network(
+                                    song.albumArtUrl!,
+                                    width: 50,
+                                    height: 50,
+                                    fit: BoxFit.cover,
+                                    errorBuilder:
+                                        (context, error, stackTrace) =>
+                                            const Icon(Icons.music_note),
+                                  )
+                                : Container(
+                                    width: 50,
+                                    height: 50,
+                                    color: Colors.deepPurple,
+                                    child: const Icon(
+                                      Icons.music_note,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                          ),
+
+                          title: Text(
+                            song.title,
+                            style: TextStyle(
+                              color: isCurrent
+                                  ? Colors.deepPurpleAccent
+                                  : Colors.white,
+                              fontWeight: isCurrent
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+
+                          subtitle: Text(
+                            song.artist,
+                            style: const TextStyle(color: Colors.white60),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+
+                          trailing: isCurrent
+                              ? const Icon(
+                                  Icons.equalizer,
+                                  color: Colors.deepPurpleAccent,
+                                )
+                              : null,
+
+                          onTap: () async {
+                            await player.seek(Duration.zero, index: index);
+
+                            await player.play();
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -500,6 +630,12 @@ class _FullScreenPlayerState extends State<FullScreenPlayer> {
                       },
                     );
                   },
+                ),
+
+                // queue
+                IconButton(
+                  icon: const Icon(Icons.queue_music, color: Colors.white),
+                  onPressed: () => _showQueue(context),
                 ),
               ],
             ),
