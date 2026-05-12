@@ -1,5 +1,5 @@
-/// My drawer is used to sort the categories of features on the sandwhich column.
-/// THese include the all tracks, playlist, genres, settings, and upload page.
+// My drawer is used to sort the categories of features on the sandwhich column.
+// THese include the all tracks, playlist, genres, settings, and upload page.
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -17,7 +17,7 @@ class MyDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     // Navigation to the main menu
     return Drawer(
-      // A Child can accept a single widget 
+      // A Child can accept a single widget
       child: ListView(
         padding: EdgeInsets.zero,
         // Children can accept a list of widgets
@@ -56,7 +56,8 @@ class MyDrawer extends StatelessWidget {
             // icons create physical icons, like Caleb Williams
             leading: const Icon(Icons.library_music),
             title: const Text("Playlists"),
-            onTap: () { // Ontap allows to trigger the request to send the user 
+            onTap: () {
+              // Ontap allows to trigger the request to send the user
               Navigator.pop(context);
               // Navigator gets pushed to MaterialPageRoute which sends the user
               // to the PlaylistPage that is created.
@@ -108,7 +109,7 @@ class MyDrawer extends StatelessWidget {
             title: const Text("Import Local Songs"),
             onTap: () {
               // With the depenencies, we can read and write local files
-              // to play with media on the application 
+              // to play with media on the application
               Navigator.pop(context);
               context.read<TrackInfo>().pickLocalFiles();
             },
