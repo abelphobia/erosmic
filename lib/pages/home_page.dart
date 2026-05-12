@@ -2,19 +2,21 @@
 // page, search songs directly from the homepage, view recently added songs
 // genres, and albums. Additionally the user can use the miniplayer where
 // the application opens to the now playing section of the page.
-//  
+//
 
 import 'package:flutter/material.dart';
 import 'package:erosmic/pages/mini_player.dart';
-import 'package:erosmic/pages/playlists_page.dart';
+//import 'package:erosmic/pages/playlists_page.dart';
 import 'package:erosmic/pages/genre_page.dart';
 import 'package:erosmic/models/track_info.dart';
 import 'package:provider/provider.dart';
 import 'package:erosmic/models/song.dart';
 import 'package:erosmic/categories/my_drawer.dart';
+import 'package:erosmic/pages/albums_page.dart';
 
 // creates a custom widget that can be place on multiple apps
-class HomePage extends StatefulWidget { // Stateful Widgets can be be changed and rebuilt
+class HomePage extends StatefulWidget {
+  // Stateful Widgets can be be changed and rebuilt
   const HomePage({super.key}); // super keys accepts an optional key parameter
 
   @override // overriding a method from a stateful widget allows to the test the statefulwidget for bugs and/or errors
@@ -24,13 +26,17 @@ class HomePage extends StatefulWidget { // Stateful Widgets can be be changed an
   // this allows for a fresh state object to make cycling objects easier + faster
 }
 
-class _HomePageState extends State<HomePage> { // creates a statefulwidget for the homepage widget
-  final TextEditingController _searchController = TextEditingController(); // declares a controller to modify and change text as needed.
+class _HomePageState extends State<HomePage> {
+  // creates a statefulwidget for the homepage widget
+  final TextEditingController _searchController =
+      TextEditingController(); // declares a controller to modify and change text as needed.
 
   // Greeting text for user
-  String getGreeting() { // DateTime.Now gets time from device
-    final hour = DateTime.now().hour; // declare variables assigned to a value only once
-    if (hour < 12) return "Good Morning"; 
+  String getGreeting() {
+    // DateTime.Now gets time from device
+    final hour =
+        DateTime.now().hour; // declare variables assigned to a value only once
+    if (hour < 12) return "Good Morning";
     if (hour < 17) return "Good Afternoon";
     return "Good Evening";
   }
@@ -40,7 +46,7 @@ class _HomePageState extends State<HomePage> { // creates a statefulwidget for t
   // This creates a list for Genres and maps to the genre
   List<String> getUniqueGenres(List<Song> tracks) =>
       tracks.map((t) => t.genre).toSet().toList();
-  // This creates a list for Albums and lets the user select it. 
+  // This creates a list for Albums and lets the user select it.
   List<String> getUniqueAlbums(List<Song> tracks) =>
       tracks.map((t) => t.album).toSet().toList();
   // Filters the track then places the controller to a query. || VERIFY
@@ -55,6 +61,7 @@ class _HomePageState extends State<HomePage> { // creates a statefulwidget for t
         )
         .toList();
   }
+
   // filters queries in a list
   List<String> filterStrings(List<String> items) {
     final query = _searchController.text.toLowerCase();
@@ -69,7 +76,7 @@ class _HomePageState extends State<HomePage> { // creates a statefulwidget for t
   }
 
   @override
-  // trackInfo || places data 
+  // trackInfo || places data
   Widget build(BuildContext context) {
     final trackInfo = context.watch<TrackInfo>();
     final allTracks = trackInfo.tracks;
@@ -160,13 +167,9 @@ class _HomePageState extends State<HomePage> { // creates a statefulwidget for t
               const SizedBox(height: 28),
 
               // Albums
-              buildSectionHeader(context, "Albums", const PlaylistPage()),
+              buildSectionHeader(context, "Albums", const AlbumsPage()),
               const SizedBox(height: 14),
-              buildHorizontalCards(
-                context,
-                filteredAlbums,
-                const PlaylistPage(),
-              ),
+              buildHorizontalCards(context, filteredAlbums, const AlbumsPage()),
 
               const SizedBox(height: 28),
 
