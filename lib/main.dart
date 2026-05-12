@@ -3,27 +3,30 @@ import 'package:provider/provider.dart';
 import 'package:erosmic/models/track_info.dart';
 import 'package:erosmic/pages/home_page.dart';
 import 'package:erosmic/pages/mini_player.dart';
-import 'package:erosmic/themes/dark_mode.dart';
+import 'package:erosmic/themes/theme_setter.dart';
 
 void main() {
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => TrackInfo()..fetchAll(),
-      child: const ErosmicApp(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => TrackInfo()..fetchAll()),
+      ],
+      child: const MyApp(),
     ),
   );
 }
 
-class ErosmicApp extends StatelessWidget {
-  const ErosmicApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData.light(),
-      darkTheme: darkMode,
-      home: const RootPage(),
+      title: 'Erosmic',
+      theme: context.watch<ThemeProvider>().themeData,
+      home: const HomePage(),
     );
   }
 }
