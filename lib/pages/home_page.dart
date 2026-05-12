@@ -1,3 +1,9 @@
+// The main directory of the page. This allows the user to hover to the category
+// page, search songs directly from the homepage, view recently added songs
+// genres, and albums. Additionally the user can use the miniplayer where
+// the application opens to the now playing section of the page.
+//  
+
 import 'package:flutter/material.dart';
 import 'package:erosmic/pages/mini_player.dart';
 import 'package:erosmic/pages/playlists_page.dart';
@@ -7,31 +13,37 @@ import 'package:provider/provider.dart';
 import 'package:erosmic/models/song.dart';
 import 'package:erosmic/categories/my_drawer.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+// creates a custom widget that can be place on multiple apps
+class HomePage extends StatefulWidget { // Stateful Widgets can be be changed and rebuilt
+  const HomePage({super.key}); // super keys accepts an optional key parameter
 
-  @override
+  @override // overriding a method from a stateful widget allows to the test the statefulwidget for bugs and/or errors
+  // @override is a good method as it gives you safety against future changes, especially with superclasses.
   State<HomePage> createState() => _HomePageState();
+  // creates the widget and makes a new instance of the states subclass.
+  // this allows for a fresh state object to make cycling objects easier + faster
 }
 
-class _HomePageState extends State<HomePage> {
-  final TextEditingController _searchController = TextEditingController();
+class _HomePageState extends State<HomePage> { // creates a statefulwidget for the homepage widget
+  final TextEditingController _searchController = TextEditingController(); // declares a controller to modify and change text as needed.
 
-  String getGreeting() {
-    final hour = DateTime.now().hour;
-    if (hour < 12) return "Good Morning";
+  // Greeting text for user
+  String getGreeting() { // DateTime.Now gets time from device
+    final hour = DateTime.now().hour; // declare variables assigned to a value only once
+    if (hour < 12) return "Good Morning"; 
     if (hour < 17) return "Good Afternoon";
     return "Good Evening";
   }
 
+  // This creates a list for recently added from the 5 most recent data
   List<Song> getRecentlyAdded(List<Song> tracks) => tracks.take(5).toList();
-
+  // This creates a list for Genres and maps to the genre
   List<String> getUniqueGenres(List<Song> tracks) =>
       tracks.map((t) => t.genre).toSet().toList();
-
+  // This creates a list for Albums and lets the user select it. 
   List<String> getUniqueAlbums(List<Song> tracks) =>
       tracks.map((t) => t.album).toSet().toList();
-
+  // Filters the track then places the controller to a query. || VERIFY
   List<Song> filterTracks(List<Song> tracks) {
     final query = _searchController.text.toLowerCase();
     if (query.isEmpty) return tracks;
@@ -43,7 +55,7 @@ class _HomePageState extends State<HomePage> {
         )
         .toList();
   }
-
+  // filters queries in a list
   List<String> filterStrings(List<String> items) {
     final query = _searchController.text.toLowerCase();
     if (query.isEmpty) return items;
@@ -57,6 +69,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
+  // trackInfo || places data 
   Widget build(BuildContext context) {
     final trackInfo = context.watch<TrackInfo>();
     final allTracks = trackInfo.tracks;
