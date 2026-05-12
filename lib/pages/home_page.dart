@@ -66,7 +66,7 @@ class _HomePageState extends State<HomePage> {
     final filteredGenres = filterStrings(getUniqueGenres(allTracks));
 
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: Theme.of(context).colorScheme.surface,
       drawer: buildAppDrawer(context),
       bottomNavigationBar: const MiniPlayer(),
       body: SafeArea(
@@ -126,7 +126,9 @@ class _HomePageState extends State<HomePage> {
                   hintText: "Search",
                   prefixIcon: const Icon(Icons.search),
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.05),
                   contentPadding: const EdgeInsets.symmetric(vertical: 14),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
@@ -173,7 +175,8 @@ class _HomePageState extends State<HomePage> {
   Widget buildAppDrawer(BuildContext context) {
     return const MyDrawer();
   }
-  // Part of the Section builders
+
+  // ── Section builders ────────────────────────────────────────────────────────
 
   Widget buildSectionTitle(String title) {
     return Text(
@@ -201,7 +204,7 @@ class _HomePageState extends State<HomePage> {
 
   // ── Card builders ────────────────────────────────────────────────────────────
 
-  // Recently Added — Song objects, not clickable
+  // Recently Added — tap anywhere on card to play the song
   Widget buildStaticHorizontalCards(List<Song> items) {
     return SizedBox(
       height: 150,
@@ -212,56 +215,72 @@ class _HomePageState extends State<HomePage> {
           : ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: items.length,
-              // ignore: unnecessary_underscores
-              separatorBuilder: (_, __) => const SizedBox(width: 14),
+              separatorBuilder: (context, index) => const SizedBox(width: 14),
               itemBuilder: (context, index) {
                 final song = items[index];
-                return Container(
-                  width: 120,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(14),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 6,
-                        offset: Offset(0, 3),
-                      ),
-                    ],
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.music_note,
-                          color: Color.fromARGB(255, 71, 131, 221),
-                          size: 28,
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          song.title,
-                          textAlign: TextAlign.center,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          song.artist,
-                          textAlign: TextAlign.center,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 11,
-                            color: Colors.grey,
-                          ),
+                return GestureDetector(
+                  onTap: () {
+                    final trackInfo = context.read<TrackInfo>();
+                    final fullIndex = trackInfo.tracks.indexOf(song);
+                    if (fullIndex != -1) {
+                      trackInfo.playSong(fullIndex);
+                    }
+                  },
+                  child: Container(
+                    width: 120,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(14),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 6,
+                          offset: Offset(0, 3),
                         ),
                       ],
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // Play button in the middle
+                          Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: const BoxDecoration(
+                              color: Color.fromARGB(255, 71, 131, 221),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.play_arrow,
+                              color: Colors.white,
+                              size: 22,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            song.title,
+                            textAlign: TextAlign.center,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            song.artist,
+                            textAlign: TextAlign.center,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 11,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 );
@@ -285,7 +304,7 @@ class _HomePageState extends State<HomePage> {
           : ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: items.length,
-              separatorBuilder: (_, _) => const SizedBox(width: 14),
+              separatorBuilder: (ctx, i) => const SizedBox(width: 14),
               itemBuilder: (context, index) {
                 return GestureDetector(
                   onTap: () => Navigator.push(
