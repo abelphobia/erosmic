@@ -13,38 +13,63 @@ class MiniPlayer extends StatefulWidget {
 
 class _MiniPlayerState extends State<MiniPlayer> {
   final AudioPlayer _player = AudioPlayer();
+  late TrackInfo _trackInfo;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _trackInfo = context.read<TrackInfo>();
+  }
 
   @override
   void initState() {
     super.initState();
-    _loadPlaylist();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _trackInfo = context.read<TrackInfo>();
+      _trackInfo.addListener(_onTrackChanged);
+      // Load the playlist once on startup
+      _loadPlaylist();
+    });
   }
 
   Future<void> _loadPlaylist() async {
-    final trackInfo = context.read<TrackInfo>();
+    final tracks = _trackInfo.tracks;
+    if (tracks.isEmpty) return;
 
     final playlist = ConcatenatingAudioSource(
-      children: trackInfo.tracks.map((song) {
-        // Local file from phone storage
-        if (song.sourceType == AudioSourceType.local &&
-            song.audioPath != null) {
+      children: tracks.map((song) {
+        if (song.sourceType == AudioSourceType.local) {
+          return AudioSource.file(song.audioPath!, tag: song);
+        } else {
           return AudioSource.uri(Uri.parse(song.audioPath!), tag: song);
         }
-        // Jellyfin stream
-        if (song.sourceType == AudioSourceType.stream &&
-            song.streamUrl != null) {
-          return AudioSource.uri(Uri.parse(song.streamUrl!), tag: song);
-        }
-        // Fallback — should never hit this but prevents a crash
-        return AudioSource.uri(Uri.parse(''), tag: song);
       }).toList(),
     );
 
     await _player.setAudioSource(playlist);
   }
 
+  void _onTrackChanged() async {
+    final index = _trackInfo.currentTrackIndex;
+    final tracks = _trackInfo.tracks;
+
+    if (tracks.isEmpty) return;
+
+    // Reload the playlist in case new tracks were added (e.g. local files)
+    if (_player.sequence == null || _player.sequence!.length != tracks.length) {
+      await _loadPlaylist();
+    }
+
+    if (index < 0 || index >= (_player.sequence?.length ?? 0)) return;
+
+    await _player.seek(Duration.zero, index: index);
+    await _player.play();
+  }
+
   @override
   void dispose() {
+    _trackInfo.removeListener(_onTrackChanged);
     _player.dispose();
     super.dispose();
   }
@@ -75,7 +100,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
         ),
         child: Row(
           children: [
-            // Album art — shows network image for Jellyfin, icon for local
+            // Album art
             StreamBuilder<SequenceState?>(
               stream: _player.sequenceStateStream,
               builder: (context, snapshot) {
@@ -93,7 +118,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
                           child: Image.network(
                             song!.albumArtUrl!,
                             fit: BoxFit.cover,
-                            errorBuilder: (_, _, _) => const Icon(
+                            errorBuilder: (ctx, er, stack) => const Icon(
                               Icons.music_note,
                               color: Color.fromARGB(255, 21, 123, 170),
                             ),
@@ -129,7 +154,6 @@ class _MiniPlayerState extends State<MiniPlayer> {
                       const SizedBox(height: 2),
                       Row(
                         children: [
-                          // Source indicator badge
                           if (song != null)
                             Container(
                               margin: const EdgeInsets.only(right: 4),
@@ -264,7 +288,7 @@ class _FullScreenPlayerState extends State<FullScreenPlayer> {
                           child: Image.network(
                             song!.albumArtUrl!,
                             fit: BoxFit.cover,
-                            errorBuilder: (_, _, _) => const Icon(
+                            errorBuilder: (ctx, er, stack) => const Icon(
                               Icons.music_note,
                               size: 100,
                               color: Colors.white,
@@ -308,7 +332,6 @@ class _FullScreenPlayerState extends State<FullScreenPlayer> {
                             fontSize: 16,
                           ),
                         ),
-                        // Source badge
                         if (song != null)
                           Container(
                             margin: const EdgeInsets.only(top: 4),
