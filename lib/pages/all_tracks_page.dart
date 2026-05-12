@@ -63,24 +63,52 @@ class _AllTracksPageState extends State<AllTracksPage> {
               ),
               Expanded(
                 child: filteredTracks.isEmpty
-                    ? const Center(child: Text("No songs found"))
+                    ? const Center(
+                        child: Text("No songs found"),
+                      ) // If there are no songs, this will be displayed
                     : ListView.builder(
+                        // creating the list for all the songs on file.
                         itemCount: filteredTracks.length,
                         itemBuilder: (context, index) {
                           final track = filteredTracks[index];
+                          final trackInfo = context.read<TrackInfo>();
+                          final fullIndex = trackInfo.tracks.indexOf(track);
+                          final isPlaying =
+                              fullIndex == trackInfo.currentTrackIndex;
+
+                          // Highlights the song that is currently playing
                           return ListTile(
-                            leading: const Icon(Icons.music_note),
-                            title: Text(track.title),
-                            subtitle: Text("${track.artist} • ${track.album}"),
+                            tileColor: isPlaying
+                                ? Theme.of(
+                                    context,
+                                  ).colorScheme.primary.withValues(alpha: 0.15)
+                                : null,
+                            leading: Icon(
+                              isPlaying ? Icons.equalizer : Icons.music_note,
+                              color: isPlaying
+                                  ? Theme.of(context).colorScheme.primary
+                                  : null,
+                            ),
+                            title: Text(
+                              track.title,
+                              style: TextStyle(
+                                color: isPlaying
+                                    ? Theme.of(context).colorScheme.primary
+                                    : null,
+                                fontWeight: isPlaying
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                              ),
+                            ),
+                            // provides the text of the title, artist, album, and genre of the song.
+                            subtitle: Text(
+                              "${track.artist} • ${track.album} • ${track.genre}",
+                            ),
+                            // allows the user to click and play
                             onTap: () {
-                              final trackInfo = context.read<TrackInfo>();
-                              final originalIndex = trackInfo.tracks.indexOf(
-                                track,
-                              );
-                              if (originalIndex != -1) {
-                                trackInfo.playSong(originalIndex);
+                              if (fullIndex != -1) {
+                                trackInfo.playSong(fullIndex);
                               }
-                              trackInfo.playSong(index);
                             },
                           );
                         },
