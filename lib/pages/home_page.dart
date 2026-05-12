@@ -35,15 +35,15 @@ class _HomePageState extends State<HomePage> { // creates a statefulwidget for t
     return "Good Evening";
   }
 
-
+  // This creates a list for recently added from the 5 most recent data
   List<Song> getRecentlyAdded(List<Song> tracks) => tracks.take(5).toList();
-
+  // This creates a list for Genres and maps to the genre
   List<String> getUniqueGenres(List<Song> tracks) =>
       tracks.map((t) => t.genre).toSet().toList();
-
+  // This creates a list for Albums and lets the user select it. 
   List<String> getUniqueAlbums(List<Song> tracks) =>
       tracks.map((t) => t.album).toSet().toList();
-
+  // Filters the track then places the controller to a query. || VERIFY
   List<Song> filterTracks(List<Song> tracks) {
     final query = _searchController.text.toLowerCase();
     if (query.isEmpty) return tracks;
@@ -55,7 +55,7 @@ class _HomePageState extends State<HomePage> { // creates a statefulwidget for t
         )
         .toList();
   }
-
+  // filters queries in a list
   List<String> filterStrings(List<String> items) {
     final query = _searchController.text.toLowerCase();
     if (query.isEmpty) return items;
@@ -69,6 +69,7 @@ class _HomePageState extends State<HomePage> { // creates a statefulwidget for t
   }
 
   @override
+  // trackInfo || places data 
   Widget build(BuildContext context) {
     final trackInfo = context.watch<TrackInfo>();
     final allTracks = trackInfo.tracks;
