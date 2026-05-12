@@ -11,10 +11,12 @@ class TrackInfo extends ChangeNotifier {
   List<Map<String, String>> _albums = [];
   bool isLoading = false;
   String? error;
+  int _currentTrackIndex = 0;
 
   List<Song> get tracks => _tracks;
   List<String> get genres => _genres;
   List<Map<String, String>> get albums => _albums;
+  int get currentTrackIndex => _currentTrackIndex;
 
   List<Song> get localTracks =>
       _tracks.where((t) => t.sourceType == AudioSourceType.local).toList();
@@ -22,7 +24,12 @@ class TrackInfo extends ChangeNotifier {
   List<Song> get streamTracks =>
       _tracks.where((t) => t.sourceType == AudioSourceType.stream).toList();
 
-  // Fetch Jellyfin tracks on startup
+  // ← now correctly outside fetchAll
+  void playSong(int index) {
+    _currentTrackIndex = index;
+    notifyListeners();
+  }
+
   Future<void> fetchAll() async {
     isLoading = true;
     error = null;
@@ -46,12 +53,11 @@ class TrackInfo extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Called when user wants to add local files
   Future<void> pickLocalFiles() async {
     try {
       final result = await FilePicker.platform.pickFiles(
         type: FileType.audio,
-        allowMultiple: true, // let user pick multiple songs at once
+        allowMultiple: true,
       );
 
       if (result == null || result.files.isEmpty) return;
@@ -71,7 +77,6 @@ class TrackInfo extends ChangeNotifier {
           )
           .toList();
 
-      // Add to tracks without duplicates
       for (final track in newLocalTracks) {
         if (!_tracks.any((t) => t.audioPath == track.audioPath)) {
           _tracks.add(track);
@@ -85,7 +90,6 @@ class TrackInfo extends ChangeNotifier {
     }
   }
 
-  // Remove "song.mp3" → "song"
   String _cleanFileName(String fileName) {
     return fileName.contains('.')
         ? fileName.substring(0, fileName.lastIndexOf('.'))
