@@ -1,5 +1,5 @@
 // The purpose of song.dart is to allow the user to fetch
-// music from both local and streaming files so the user can 
+// music from both local and streaming files so the user can
 // get the infromation needed.
 
 // Enumerates values by parameters and returns it to the AudioScorceType
@@ -35,8 +35,9 @@ class Song {
   // For Jellyfin API tracks
   // Factory creates an interface that reports on the type of created objects
   // meaning this creates a cached instance instead of constantly creating a
-  // new instance. 
-  factory Song.fromJson(Map<String, dynamic> json) {  // Json converts to Song object from using a dynamic value.
+  // new instance.
+  factory Song.fromJson(Map<String, dynamic> json) {
+    // Json converts to Song object from using a dynamic value.
     return Song(
       id: json["id"],
       title: json["title"],
@@ -45,15 +46,17 @@ class Song {
       genre: json["genre"],
       duration: Duration(seconds: json["duration"]),
       streamUrl: json["streamUrl"], // streaming URL source from Jellyfin
-      albumArtUrl: json["albumArtUrl"], // uploading album art source from Jellyfin
+      albumArtUrl:
+          json["albumArtUrl"], // uploading album art source from Jellyfin
       sourceType: AudioSourceType.stream,
     );
   }
 
   // For local files
   // Same premise for factory gets applied to local files as well.
-  
+
   // fromLocal requires the certain information needed from source.
+  // metagod
   factory Song.fromLocal({
     required String id,
     required String title,
