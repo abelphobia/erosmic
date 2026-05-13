@@ -36,11 +36,6 @@ HEADERS = {
     "X-Emby-Token": API_KEY
 }
 
-# Debugging
-print("INTERNAL:", JELLYFIN_INTERNAL_URL)
-print("PUBLIC:", JELLYFIN_PUBLIC_URL)
-print("USER:", USER_ID)
-
 # ── Helpers ───────────────────────────────────────────────────
 
 def build_track(item):
