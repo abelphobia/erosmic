@@ -69,6 +69,7 @@ class _HomePageState extends State<HomePage> {
     return items.where((s) => s.toLowerCase().contains(query)).toList();
   }
 
+// disposes the controller to clear out the memory
   @override
   void dispose() {
     _searchController.dispose();
@@ -78,13 +79,15 @@ class _HomePageState extends State<HomePage> {
   @override
   // trackInfo || places data
   Widget build(BuildContext context) {
+    // grabs the infromation of the trackInfo then places it on the ome page
     final trackInfo = context.watch<TrackInfo>();
     final allTracks = trackInfo.tracks;
-
+    // filters out the recently added tracks / albums / genres and places them onto the its category
     final filteredRecentlyAdded = filterTracks(getRecentlyAdded(allTracks));
     final filteredAlbums = filterStrings(getUniqueAlbums(allTracks));
     final filteredGenres = filterStrings(getUniqueGenres(allTracks));
 
+    // return
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       drawer: buildAppDrawer(context),
