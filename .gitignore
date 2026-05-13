@@ -65,3 +65,7 @@ __pycache__/
 .DS_Store
 Thumbs.db
 android/build/reports/problems/problems-report.html
+android/app/src/main/AndroidManifest.xml
+ErosmicAPI/tempCodeRunnerFile.py
+.gitignore
+android/app/src/main/AndroidManifest.xml
