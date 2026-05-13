@@ -1,4 +1,3 @@
 class ApiConfig {
-  // While developing on your computer
-  static const String baseUrl = "JELLYFIN_BASEURL";
+  static const String baseUrl = "http://10.0.2.2:8000";
 }
