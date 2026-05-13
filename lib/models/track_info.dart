@@ -46,6 +46,10 @@ class TrackInfo extends ChangeNotifier {
       _tracks = results[0] as List<Song>;
       _genres = results[1] as List<String>;
       _albums = results[2] as List<Map<String, String>>;
+
+      if (_tracks.isNotEmpty) {
+        debugPrint("Uploading Stream URL: ${tracks.first.streamUrl}");
+      }
     } catch (e) {
       error = e.toString();
     }
