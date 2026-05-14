@@ -104,8 +104,8 @@ async def get_tracks(): # Allows the request coming from FastAPI to run in a asy
                 detail=response.text,
             )
 
-        items = response.json().get("Items", [])
-
+        items = response.json().get("Items", []) # Jellyfins responds in JSON to the list in "items", [] if there are no items on the list.
+        # executes in items name in items.
         return [build_track(item) for item in items]
 # any other errors will be defined on the terminal.
     except Exception as e:
@@ -130,9 +130,9 @@ async def get_genres():
             detail="Failed to fetch genres",
         )
 
-    items = response.json().get("Items", [])
+    items = response.json().get("Items", []) 
+    return [item["Name"] for item in items] 
 
-    return [item["Name"] for item in items]
 # Gets albums 
 @app.get("/albums")
 async def get_albums():
@@ -153,7 +153,7 @@ async def get_albums():
         )
 
     items = response.json().get("Items", [])
-
+    # provides the id and name of each album.
     return [
         {
             "id": item["Id"],
