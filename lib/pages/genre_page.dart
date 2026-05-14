@@ -3,32 +3,41 @@ import 'package:provider/provider.dart';
 import 'package:erosmic/models/track_info.dart';
 
 class GenrePage extends StatelessWidget {
-  const GenrePage({super.key});
+  const GenrePage({
+    super.key,
+  }); // Class extends allows to create a subclass that allows the genre page to be used as needed.
 
   @override
   Widget build(BuildContext context) {
-    final trackInfo = context.watch<TrackInfo>();
+    final trackInfo = context
+        .watch<
+          TrackInfo
+        >(); // final serves as runtime constrants and are assigned once they are calculated
 
     if (trackInfo.isLoading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      // loads the track provided from the provider package
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      ); // fetches data and displays a loading screen when loading / closing.
     }
-
+    // if trackInfo fails, it will display this error.
     if (trackInfo.error != null) {
       return Scaffold(
         appBar: AppBar(title: const Text("Genre"), centerTitle: true),
         body: Center(child: Text("Error: ${trackInfo.error}")),
       );
     }
-
+    // Maps the genres onto the empty list. | ? can be null, : can have conditions (if/else)
     final genres = trackInfo.genres.isEmpty
         ? trackInfo.tracks.map((t) => t.genre).toSet().toList()
         : trackInfo.genres;
-
+    // front end section of the genre page
     return Scaffold(
       appBar: AppBar(title: const Text("GENRES"), centerTitle: true),
       body: genres.isEmpty
           ? const Center(child: Text("No genres found"))
           : ListView.builder(
+              // sets the genres on a list
               itemCount: genres.length,
               itemBuilder: (context, index) {
                 final genre = genres[index];
@@ -36,9 +45,10 @@ class GenrePage extends StatelessWidget {
                     .where((t) => t.genre == genre)
                     .length;
 
+                // Logo
                 return ListTile(
                   leading: const CircleAvatar(
-                    backgroundColor: Colors.deepPurple,
+                    backgroundColor: Color.fromARGB(255, 64, 131, 175),
                     child: Icon(Icons.library_music, color: Colors.white),
                   ),
                   title: Text(
@@ -49,6 +59,7 @@ class GenrePage extends StatelessWidget {
                   trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                   onTap: () {
                     Navigator.push(
+                      // pushes the genre type to a list of songs from the genre
                       context,
                       MaterialPageRoute(
                         builder: (_) => GenreTracksPage(genre: genre),
@@ -62,7 +73,7 @@ class GenrePage extends StatelessWidget {
   }
 }
 
-// ── Genre Tracks Page ─────────────────────────────────────────────────────────
+// Genre Tracks Page | Where the navigator push gets sent to.
 
 class GenreTracksPage extends StatelessWidget {
   final String genre;
@@ -84,7 +95,7 @@ class GenreTracksPage extends StatelessWidget {
                 final song = songs[index];
                 return ListTile(
                   leading: const CircleAvatar(
-                    backgroundColor: Colors.deepPurple,
+                    backgroundColor: Color.fromARGB(255, 64, 131, 175),
                     child: Icon(Icons.music_note, color: Colors.white),
                   ),
                   title: Text(
