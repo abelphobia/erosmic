@@ -86,35 +86,40 @@ class _HomePageState extends State<HomePage> {
     final filteredAlbums = filterStrings(getUniqueAlbums(allTracks));
     final filteredGenres = filterStrings(getUniqueGenres(allTracks));
 
-    // return
-    return Scaffold(
+    // whole front end design of the app
+    return Scaffold( 
+      // applies the app drawer package
       backgroundColor: Theme.of(context).colorScheme.surface,
       drawer: buildAppDrawer(context),
+      // miniplayer 
       bottomNavigationBar: const MiniPlayer(),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        child: SingleChildScrollView(  // makes the widget scrollable
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10), 
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Top bar
+              // allows multiple list of widgets in a widger
               Builder(
-                builder: (context) => Stack(
+                builder: (context) => Stack( // builds the context instances of the multiple widgets
                   alignment: Alignment.center,
                   children: [
+                    // applies the MyDrawer package
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         IconButton(
-                          onPressed: () => Scaffold.of(context).openDrawer(),
-                          icon: const Icon(Icons.menu, size: 30),
+                          onPressed: () => Scaffold.of(context).openDrawer(), // callback for the iconbutton
+                          icon: const Icon(Icons.menu, size: 30), // caleb williams (for now)
                         ),
+                        // Applies the the account circle (will be created later)
                         IconButton(
                           onPressed: () {},
                           icon: const Icon(Icons.account_circle, size: 30),
                         ),
                       ],
                     ),
+                    // title of the page
                     const Text(
                       "HOMEPAGE",
                       style: TextStyle(
@@ -129,7 +134,7 @@ class _HomePageState extends State<HomePage> {
 
               const SizedBox(height: 20),
 
-              // Greeting
+              // Greeting by time of the hour
               Text(
                 getGreeting(),
                 style: const TextStyle(
@@ -140,7 +145,7 @@ class _HomePageState extends State<HomePage> {
 
               const SizedBox(height: 18),
 
-              // Search bar
+              // Search bar // USE A NAVIGATOR
               TextField(
                 controller: _searchController,
                 onChanged: (_) => setState(() {}),
@@ -158,28 +163,26 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
-
-              const SizedBox(height: 28),
-
+               // Creates multiple cards of each category
               // Recently Added
+              const SizedBox(height: 28),
               buildSectionTitle("Recently Added"),
               const SizedBox(height: 14),
               buildStaticHorizontalCards(filteredRecentlyAdded),
 
-              const SizedBox(height: 28),
-
               // Albums
+              const SizedBox(height: 28),
               buildSectionHeader(context, "Albums", const AlbumsPage()),
               const SizedBox(height: 14),
               buildHorizontalCards(context, filteredAlbums, const AlbumsPage()),
 
-              const SizedBox(height: 28),
-
               // Genre
+              const SizedBox(height: 28),
               buildSectionHeader(context, "Genre", const GenrePage()),
               const SizedBox(height: 14),
               buildHorizontalCards(context, filteredGenres, const GenrePage()),
 
+              // possible deletion, need to check when i get home.
               const SizedBox(height: 30),
             ],
           ),
@@ -188,13 +191,13 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // ── Drawer ──────────────────────────────────────────────────────────────────
+  // Applies the MyDrawer widget
 
   Widget buildAppDrawer(BuildContext context) {
     return const MyDrawer();
   }
 
-  // ── Section builders ────────────────────────────────────────────────────────
+  // Applies the Builders
 
   Widget buildSectionTitle(String title) {
     return Text(
@@ -203,6 +206,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+//  
   Widget buildSectionHeader(BuildContext context, String title, Widget page) {
     return GestureDetector(
       onTap: () =>
@@ -220,13 +224,13 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // ── Card builders ────────────────────────────────────────────────────────────
+  // Card builder functionalities
 
   // Recently Added — tap anywhere on card to play the song
   Widget buildStaticHorizontalCards(List<Song> items) {
     return SizedBox(
       height: 150,
-      child: items.isEmpty
+      child: items.isEmpty // if the application does not have any uploaded songs on either local or server
           ? const Center(
               child: Text("No results found", style: TextStyle(fontSize: 16)),
             )
@@ -235,13 +239,13 @@ class _HomePageState extends State<HomePage> {
               itemCount: items.length,
               separatorBuilder: (context, index) => const SizedBox(width: 14),
               itemBuilder: (context, index) {
-                final song = items[index];
-                return GestureDetector(
-                  onTap: () {
-                    final trackInfo = context.read<TrackInfo>();
-                    final fullIndex = trackInfo.tracks.indexOf(song);
+                final song = items[index]; // retrieves the songs from the song package
+                return GestureDetector( 
+                  onTap: () { // allows the button to be pressed
+                    final trackInfo = context.read<TrackInfo>(); // finalizes the trackInfo from package TrackInfo
+                    final fullIndex = trackInfo.tracks.indexOf(song); // gets the full index of all the songs provided from song.dart
                     if (fullIndex != -1) {
-                      trackInfo.playSong(fullIndex);
+                      trackInfo.playSong(fullIndex); // allows the user to play the song
                     }
                   },
                   child: Container(
