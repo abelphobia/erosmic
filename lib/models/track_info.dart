@@ -78,18 +78,21 @@ class TrackInfo extends ChangeNotifier {
       error = e.toString();
     }
 
-    isLoading = false; // if the data is not loading the
+    isLoading = false; // if the data is not loading the data
     notifyListeners();
   }
 
   // Loads ALL local device songs via on_audio_query (full metadata)
+  // I was able to make this work when I was using the audio installed, but removed that option given that it was a demo sample
+  // I had issues fetching data using on_audio_query
   Future<void> loadLocalTracks() async {
     isLoading = true;
     error = null;
     notifyListeners();
 
     try {
-      final localSongs = await _localService.fetchLocalSongs();
+      final localSongs = await _localService
+          .fetchLocalSongs(); // fetches local songs and waits for a response
 
       for (final track in localSongs) {
         if (!_tracks.any((t) => t.audioPath == track.audioPath)) {
@@ -105,6 +108,7 @@ class TrackInfo extends ChangeNotifier {
   }
 
   // Fallback: manual file picker (used if user wants to pick specific files)
+  // when uploaded manually from the files, this will list the songs as unknown.
   Future<void> pickLocalFiles() async {
     try {
       final result = await FilePicker.platform.pickFiles(
