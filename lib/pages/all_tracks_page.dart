@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart'; // Provides the general materials needed such as theme,
 import 'package:provider/provider.dart';
 import 'package:erosmic/models/track_info.dart';
 import 'package:erosmic/models/song.dart';
