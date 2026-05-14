@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:just_audio/just_audio.dart';
+import 'package:just_audio/just_audio.dart'; // general audio player package
 import 'package:provider/provider.dart';
 import 'package:erosmic/models/track_info.dart';
 import 'package:erosmic/models/song.dart';

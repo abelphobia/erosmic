@@ -6,7 +6,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:erosmic/pages/mini_player.dart';
-//import 'package:erosmic/pages/playlists_page.dart';
 import 'package:erosmic/pages/genre_page.dart';
 import 'package:erosmic/models/track_info.dart';
 import 'package:provider/provider.dart';
@@ -69,7 +68,7 @@ class _HomePageState extends State<HomePage> {
     return items.where((s) => s.toLowerCase().contains(query)).toList();
   }
 
-// disposes the controller to clear out the memory
+  // disposes the controller to clear out the memory
   @override
   void dispose() {
     _searchController.dispose();
