@@ -4,7 +4,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:erosmic/pages/genre_page.dart';
-import 'package:erosmic/pages/playlists_page.dart';
 import 'package:erosmic/pages/all_tracks_page.dart';
 import 'package:erosmic/pages/settings_page.dart';
 import 'package:erosmic/models/track_info.dart';
@@ -51,11 +50,12 @@ class MyDrawer extends StatelessWidget {
               // page, which in this case would be the homepage.
             },
           ),
-          // Second List (Playlists)
+          // Seoncd List (Genres) | Sends the user to genre page
           ListTile(
-            // icons create physical icons, like Caleb Williams
-            leading: const Icon(Icons.library_music),
-            title: const Text("Playlists"),
+            leading: const Icon(
+              Icons.crop_square,
+            ), // icons create physical icons, like Caleb Williams
+            title: const Text("Genres"),
             onTap: () {
               // Ontap allows to trigger the request to send the user
               Navigator.pop(context);
@@ -63,23 +63,11 @@ class MyDrawer extends StatelessWidget {
               // to the PlaylistPage that is created.
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const PlaylistPage()),
-              );
-            },
-          ),
-          // Third List (Genres) | Sends the user to genre page
-          ListTile(
-            leading: const Icon(Icons.crop_square),
-            title: const Text("Genres"),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(
-                context,
                 MaterialPageRoute(builder: (_) => const GenrePage()),
               );
             },
           ),
-          // Fourth List (All Song) | Sends the user to the AllTracksPage
+          // Third List (All Song) | Sends the user to the AllTracksPage
           ListTile(
             leading: const Icon(Icons.music_note),
             title: const Text("All Songs"),
@@ -91,7 +79,7 @@ class MyDrawer extends StatelessWidget {
               );
             },
           ),
-          // Fifth List (Settings) | Sends the user to settings page
+          // Forth List (Settings) | Sends the user to settings page
           ListTile(
             leading: const Icon(Icons.settings),
             title: const Text("Settings"),
@@ -103,7 +91,7 @@ class MyDrawer extends StatelessWidget {
               );
             },
           ),
-          // Sixth List (Importing songs)
+          // Fifth List (Importing songs)
           ListTile(
             leading: const Icon(Icons.file_upload),
             title: const Text("Import Local Songs"),
