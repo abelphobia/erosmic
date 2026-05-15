@@ -47,7 +47,7 @@ class SettingsPage extends StatelessWidget {
             color: colorScheme.onSurface.withOpacity(0.7),
           ), // readable subtitle color
         ),
-        activeColor:
+        activeThumbColor:
             colorScheme.primary, // uses theme primary color for the switch
         value: themeProvider.isDarkMode,
         onChanged: (val) {
