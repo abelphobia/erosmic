@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:erosmic/pages/mini_player.dart';
 import 'package:erosmic/pages/genre_page.dart';
 import 'package:erosmic/models/track_info.dart';
-import 'package:provider/provider.dart';
+import 'package:provider/provider.dart'; // from pubspec.yaml
 import 'package:erosmic/models/song.dart';
 import 'package:erosmic/categories/my_drawer.dart';
 import 'package:erosmic/pages/albums_page.dart';
