@@ -287,6 +287,7 @@ class _HomePageState extends State<HomePage> {
                             style: const TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w600,
+                              color: Colors.black,
                             ),
                           ),
                           // text title of the artist | recently added
@@ -355,6 +356,7 @@ class _HomePageState extends State<HomePage> {
                           style: const TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w500,
+                            color: Colors.black,
                           ),
                         ),
                       ),
@@ -410,6 +412,7 @@ class _HomePageState extends State<HomePage> {
                           style: const TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w500,
+                            color: Colors.black,
                           ),
                         ),
                       ),

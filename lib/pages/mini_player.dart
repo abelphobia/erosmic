@@ -162,6 +162,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
+                          color: Colors.black,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -478,9 +479,9 @@ class _FullScreenPlayerState extends State<FullScreenPlayer> {
                         Text(
                           song?.title ?? "Not Playing",
                           style: const TextStyle(
-                            color: Colors.white,
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
+                            color: Colors.white,
                           ),
                         ),
                         const SizedBox(height: 4),

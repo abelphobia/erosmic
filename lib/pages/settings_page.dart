@@ -12,43 +12,11 @@ class SettingsPage extends StatelessWidget {
         .watch<
           ThemeProvider
         >(); // When provider calls notifylisteners, the widget rebuilds using context.watch
-
-    final colorScheme =
-        Theme.of(context).colorScheme; // gets the current theme colors
-
     // creates a basic design for dark mode
     return Scaffold(
-      backgroundColor:
-          colorScheme.surface, // sets the page background based on theme
-      appBar: AppBar(
-        backgroundColor:
-            colorScheme.surface, // keeps app bar background readable in theme
-        foregroundColor:
-            colorScheme.onSurface, // fixes foreground color for dark mode text/icons
-        title: Text(
-          "Settings",
-          style: TextStyle(
-            color: colorScheme.onSurface, // makes title visible in dark mode
-          ),
-        ),
-      ),
+      appBar: AppBar(title: const Text("Settings")),
       body: SwitchListTile(
-        tileColor:
-            colorScheme.surface, // keeps the tile background matched to theme
-        title: Text(
-          "Dark Mode",
-          style: TextStyle(
-            color: colorScheme.onSurface, // fixes text color in dark mode
-          ),
-        ),
-        subtitle: Text(
-          themeProvider.isDarkMode ? "Enabled" : "Disabled",
-          style: TextStyle(
-            color: colorScheme.onSurface.withValues(alpha: 0.7),
-          ), // readable subtitle color
-        ),
-        activeColor:
-            colorScheme.primary, // uses theme primary color for the switch
+        title: const Text("Dark Mode"),
         value: themeProvider.isDarkMode,
         onChanged: (val) {
           context
