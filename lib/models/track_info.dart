@@ -15,6 +15,7 @@ class TrackInfo extends ChangeNotifier {
   List<String> _genres = [];
   List<Map<String, String>> _albums = [];
   bool isLoading = false;
+  bool hasUserInitiated = false;
   String?
   error; // ? means that the string can be null when handling error messages.
   int _currentTrackIndex =
@@ -37,6 +38,7 @@ class TrackInfo extends ChangeNotifier {
 
   // Once sorted, the playSong function allows the user to play the song by its index.
   void playSong(int index) {
+    hasUserInitiated = true; // set before notifying
     _currentTrackIndex = index;
     notifyListeners(); // notifyListeners() allows the app to notify the user when something changes on the app.
   }

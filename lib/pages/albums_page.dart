@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:erosmic/models/track_info.dart';
-import 'package:erosmic/pages/mini_player.dart';
 
 class AlbumsPage extends StatelessWidget {
   const AlbumsPage({super.key});
@@ -10,27 +9,20 @@ class AlbumsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final tracks = context.watch<TrackInfo>().tracks;
 
-    final albums = tracks.map((track) => track.album).toSet().toList();
+    final Map<String, String?> albumArt = {};
+    for (final track in tracks) {
+      if (!albumArt.containsKey(track.album)) {
+        albumArt[track.album] = track.albumArtUrl;
+      }
+    }
 
-    final Map<String, String> albumCovers = {
-      "B Sides and Rarities": "assets/images/bsides_and_rarities.jpg",
-      "House of Balloons": "assets/images/house_of_balloons.png",
-      "Daughtry": "assets/images/daughtry.jpg",
-      "Hot Mess": "assets/images/hot_mess.jpg",
-      "Raymond v Raymond": "assets/images/raymond_v_raymond.png",
-      "Random Access Memories": "assets/images/random_access_memories.png",
-    };
+    final albums = albumArt.keys.toList();
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      appBar: AppBar(
-        title: const Text("A L B U M S"),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text("A L B U M S"), centerTitle: true),
       body: albums.isEmpty
-          ? const Center(
-              child: Text("No albums available"),
-            )
+          ? const Center(child: Text("No albums available"))
           : Padding(
               padding: const EdgeInsets.all(12),
               child: GridView.builder(
@@ -43,63 +35,192 @@ class AlbumsPage extends StatelessWidget {
                 ),
                 itemBuilder: (context, index) {
                   final albumName = albums[index];
-                  final coverPath = albumCovers[albumName];
+                  final artUrl = albumArt[albumName];
 
-                  return Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(14),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 6,
-                          offset: Offset(0, 3),
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => AlbumTracksPage(album: albumName),
                         ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Expanded(
-                          child: ClipRRect(
-                            borderRadius: const BorderRadius.vertical(
-                              top: Radius.circular(14),
-                            ),
-                            child: coverPath != null
-                                ? Image.asset(
-                                    coverPath,
-                                    fit: BoxFit.cover,
-                                  )
-                                : Container(
-                                    color: Colors.grey[300],
-                                    child: const Icon(
-                                      Icons.album,
-                                      size: 60,
-                                      color: Colors.grey,
+                      );
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(14),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 6,
+                            offset: Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Expanded(
+                            child: ClipRRect(
+                              borderRadius: const BorderRadius.vertical(
+                                top: Radius.circular(14),
+                              ),
+                              child: artUrl != null
+                                  ? Image.network(
+                                      artUrl,
+                                      fit: BoxFit.cover,
+                                      loadingBuilder:
+                                          (context, child, progress) {
+                                            if (progress == null) return child;
+                                            return Container(
+                                              color: Colors.grey[200],
+                                              child: const Center(
+                                                child:
+                                                    CircularProgressIndicator(
+                                                      strokeWidth: 2,
+                                                    ),
+                                              ),
+                                            );
+                                          },
+                                      errorBuilder: (context, error, stack) {
+                                        return Container(
+                                          color: Colors.grey[300],
+                                          child: const Icon(
+                                            Icons.album,
+                                            size: 60,
+                                            color: Colors.grey,
+                                          ),
+                                        );
+                                      },
+                                    )
+                                  : Container(
+                                      color: Colors.grey[300],
+                                      child: const Icon(
+                                        Icons.album,
+                                        size: 60,
+                                        color: Colors.grey,
+                                      ),
                                     ),
-                                  ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(10),
-                          child: Text(
-                            albumName,
-                            textAlign: TextAlign.center,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
                             ),
                           ),
-                        ),
-                      ],
+                          Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Text(
+                              albumName,
+                              textAlign: TextAlign.center,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 },
               ),
             ),
-      bottomNavigationBar: const MiniPlayer(),
+    );
+  }
+}
+
+class AlbumTracksPage extends StatelessWidget {
+  final String album;
+
+  const AlbumTracksPage({super.key, required this.album});
+
+  @override
+  Widget build(BuildContext context) {
+    final trackInfo = context.watch<TrackInfo>();
+    final songs = trackInfo.tracks.where((t) => t.album == album).toList();
+
+    return Scaffold(
+      appBar: AppBar(title: Text(album), centerTitle: true),
+      body: songs.isEmpty
+          ? const Center(child: Text("No tracks found"))
+          : ListView.builder(
+              itemCount: songs.length,
+              itemBuilder: (context, index) {
+                final song = songs[index];
+                final fullIndex = trackInfo.tracks.indexWhere(
+                  (t) => t.id == song.id,
+                );
+
+                return ListTile(
+                  leading: CircleAvatar(
+                    backgroundColor: const Color.fromARGB(255, 64, 131, 175),
+                    child: Text(
+                      '${index + 1}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  title: Text(
+                    song.title,
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  subtitle: Text(song.artist),
+                  trailing: const Icon(Icons.play_arrow),
+                  onTap: () {
+                    if (fullIndex != -1) {
+                      trackInfo.playSong(fullIndex);
+                    }
+                  },
+                );
+              },
+            ),
+    );
+  }
+}
+
+class ArtistTrackPage extends StatelessWidget {
+  final String genre;
+
+  const ArtistTrackPage({super.key, required this.genre});
+
+  @override
+  Widget build(BuildContext context) {
+    final trackInfo = context.watch<TrackInfo>();
+    final songs = trackInfo.tracks.where((t) => t.genre == genre).toList();
+
+    return Scaffold(
+      appBar: AppBar(title: Text(genre), centerTitle: true),
+      body: songs.isEmpty
+          ? const Center(child: Text("No songs found"))
+          : ListView.builder(
+              itemCount: songs.length,
+              itemBuilder: (context, index) {
+                final song = songs[index];
+                return ListTile(
+                  leading: const CircleAvatar(
+                    backgroundColor: Color.fromARGB(255, 64, 131, 175),
+                    child: Icon(Icons.music_note, color: Colors.white),
+                  ),
+                  title: Text(
+                    song.title,
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  subtitle: Text(song.artist),
+                  trailing: const Icon(Icons.play_arrow),
+                  onTap: () {
+                    final fullIndex = trackInfo.tracks.indexWhere(
+                      (t) => t.id == song.id,
+                    );
+                    if (fullIndex != -1) {
+                      trackInfo.playSong(fullIndex);
+                    }
+                  },
+                );
+              },
+            ),
     );
   }
 }

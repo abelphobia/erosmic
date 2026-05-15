@@ -1,21 +1,32 @@
+// although named miniplayer originally, coming both the miniplayer and the full player
+// together was a better and faster option as it is all on one page.
+
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart'; // general audio player package
-import 'package:provider/provider.dart';
+import 'package:provider/provider.dart'; // from pubspec.yaml
 import 'package:erosmic/models/track_info.dart';
 import 'package:erosmic/models/song.dart';
 
 class MiniPlayer extends StatefulWidget {
-  const MiniPlayer({super.key});
+  // can be placed on multiple apps and can be rebuild
+  const MiniPlayer({super.key}); // super key accepts an optional key parameter
 
-  @override
+  @override // This allows flutter to create a state class with the statefulwidget
   State<MiniPlayer> createState() => _MiniPlayerState();
 }
 
+// Allows the miniplayer to be defined by using the state class
+// since _player is being used, Audioplayer will create an instance
+// and will be able to play music through the audio player
 class _MiniPlayerState extends State<MiniPlayer> {
   final AudioPlayer _player = AudioPlayer();
-  TrackInfo? _trackInfo;
+  TrackInfo? _trackInfo; // finds the music info from trackinfo
+  bool hasUserInitiated = false;
 
   @override
+  // void dCD determines if dependency tracking is working properly
+  // dependency tracking is important to allow relationships from data
+  // to work properly and efficently
   void didChangeDependencies() {
     super.didChangeDependencies();
 
@@ -26,13 +37,16 @@ class _MiniPlayerState extends State<MiniPlayer> {
     _trackInfo = context.read<TrackInfo>();
     _trackInfo!.addListener(_onTrackChanged);
 
-    _loadPlaylist();
+    _loadPlaylist(); // fetches music data
   }
 
   Future<void> _loadPlaylist() async {
-    final tracks = _trackInfo?.tracks ?? [];
-    if (tracks.isEmpty) return;
+    // syncs the data onto the app
+    final tracks = _trackInfo?.tracks ?? []; // gets the track list
+    if (tracks.isEmpty) return; // returns if no list
 
+    // creates a list for the just_audio source.
+    // this sorts the music based from each audio source.
     final playlist = ConcatenatingAudioSource(
       children: tracks.map((song) {
         if (song.sourceType == AudioSourceType.local) {
@@ -43,7 +57,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
       }).toList(),
     );
 
-    await _player.setAudioSource(playlist);
+    await _player.setAudioSource(playlist); // standby for full sync for
   }
 
   void _onTrackChanged() async {
@@ -60,9 +74,11 @@ class _MiniPlayerState extends State<MiniPlayer> {
     }
 
     if (index < 0 || index >= (_player.sequence?.length ?? 0)) return;
-
     await _player.seek(Duration.zero, index: index);
-    await _player.play();
+
+    if (trackInfo.hasUserInitiated) {
+      await _player.play(); // only auto-play if user tapped a track
+    }
   }
 
   @override
@@ -315,7 +331,12 @@ class _FullScreenPlayerState extends State<FullScreenPlayer> {
                                 : Container(
                                     width: 50,
                                     height: 50,
-                                    color: Colors.deepPurple,
+                                    color: const Color.fromARGB(
+                                      255,
+                                      22,
+                                      55,
+                                      202,
+                                    ),
                                     child: const Icon(
                                       Icons.music_note,
                                       color: Colors.white,
@@ -386,8 +407,16 @@ class _FullScreenPlayerState extends State<FullScreenPlayer> {
           "Now Playing",
           style: TextStyle(color: Colors.white, fontSize: 14),
         ),
+
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.queue_music, color: Colors.white),
+            onPressed: () => _showQueue(context),
+          ),
+        ],
       ),
+
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 32),
         child: Column(
@@ -630,12 +659,6 @@ class _FullScreenPlayerState extends State<FullScreenPlayer> {
                       },
                     );
                   },
-                ),
-
-                // queue
-                IconButton(
-                  icon: const Icon(Icons.queue_music, color: Colors.white),
-                  onPressed: () => _showQueue(context),
                 ),
               ],
             ),
