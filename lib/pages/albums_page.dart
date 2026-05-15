@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:erosmic/models/track_info.dart';
-import 'package:erosmic/pages/mini_player.dart';
 
 class AlbumsPage extends StatelessWidget {
   const AlbumsPage({super.key});
@@ -10,27 +9,21 @@ class AlbumsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final tracks = context.watch<TrackInfo>().tracks;
 
-    final albums = tracks.map((track) => track.album).toSet().toList();
+    // Build a map of albumName -> albumArtUrl from track data
+    final Map<String, String?> albumArt = {};
+    for (final track in tracks) {
+      if (!albumArt.containsKey(track.album)) {
+        albumArt[track.album] = track.albumArtUrl;
+      }
+    }
 
-    final Map<String, String> albumCovers = {
-      "B Sides and Rarities": "assets/images/bsides_and_rarities.jpg",
-      "House of Balloons": "assets/images/house_of_balloons.png",
-      "Daughtry": "assets/images/daughtry.jpg",
-      "Hot Mess": "assets/images/hot_mess.jpg",
-      "Raymond v Raymond": "assets/images/raymond_v_raymond.png",
-      "Random Access Memories": "assets/images/random_access_memories.png",
-    };
+    final albums = albumArt.keys.toList();
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      appBar: AppBar(
-        title: const Text("A L B U M S"),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text("A L B U M S"), centerTitle: true),
       body: albums.isEmpty
-          ? const Center(
-              child: Text("No albums available"),
-            )
+          ? const Center(child: Text("No albums available"))
           : Padding(
               padding: const EdgeInsets.all(12),
               child: GridView.builder(
@@ -43,7 +36,7 @@ class AlbumsPage extends StatelessWidget {
                 ),
                 itemBuilder: (context, index) {
                   final albumName = albums[index];
-                  final coverPath = albumCovers[albumName];
+                  final artUrl = albumArt[albumName];
 
                   return Container(
                     decoration: BoxDecoration(
@@ -65,10 +58,31 @@ class AlbumsPage extends StatelessWidget {
                             borderRadius: const BorderRadius.vertical(
                               top: Radius.circular(14),
                             ),
-                            child: coverPath != null
-                                ? Image.asset(
-                                    coverPath,
+                            child: artUrl != null
+                                ? Image.network(
+                                    artUrl,
                                     fit: BoxFit.cover,
+                                    loadingBuilder: (context, child, progress) {
+                                      if (progress == null) return child;
+                                      return Container(
+                                        color: Colors.grey[200],
+                                        child: const Center(
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    errorBuilder: (context, error, stack) {
+                                      return Container(
+                                        color: Colors.grey[300],
+                                        child: const Icon(
+                                          Icons.album,
+                                          size: 60,
+                                          color: Colors.grey,
+                                        ),
+                                      );
+                                    },
                                   )
                                 : Container(
                                     color: Colors.grey[300],
@@ -99,7 +113,6 @@ class AlbumsPage extends StatelessWidget {
                 },
               ),
             ),
-      bottomNavigationBar: const MiniPlayer(),
     );
   }
 }
