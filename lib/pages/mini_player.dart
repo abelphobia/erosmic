@@ -21,6 +21,7 @@ class MiniPlayer extends StatefulWidget {
 class _MiniPlayerState extends State<MiniPlayer> {
   final AudioPlayer _player = AudioPlayer();
   TrackInfo? _trackInfo; // finds the music info from trackinfo
+  bool hasUserInitiated = false;
 
   @override
   // void dCD determines if dependency tracking is working properly
@@ -73,9 +74,11 @@ class _MiniPlayerState extends State<MiniPlayer> {
     }
 
     if (index < 0 || index >= (_player.sequence?.length ?? 0)) return;
-
     await _player.seek(Duration.zero, index: index);
-    await _player.play();
+
+    if (trackInfo.hasUserInitiated) {
+      await _player.play(); // only auto-play if user tapped a track
+    }
   }
 
   @override
@@ -328,7 +331,12 @@ class _FullScreenPlayerState extends State<FullScreenPlayer> {
                                 : Container(
                                     width: 50,
                                     height: 50,
-                                    color: Colors.deepPurple,
+                                    color: const Color.fromARGB(
+                                      255,
+                                      22,
+                                      55,
+                                      202,
+                                    ),
                                     child: const Icon(
                                       Icons.music_note,
                                       color: Colors.white,
@@ -399,8 +407,16 @@ class _FullScreenPlayerState extends State<FullScreenPlayer> {
           "Now Playing",
           style: TextStyle(color: Colors.white, fontSize: 14),
         ),
+
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.queue_music, color: Colors.white),
+            onPressed: () => _showQueue(context),
+          ),
+        ],
       ),
+
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 32),
         child: Column(
@@ -643,12 +659,6 @@ class _FullScreenPlayerState extends State<FullScreenPlayer> {
                       },
                     );
                   },
-                ),
-
-                // queue
-                IconButton(
-                  icon: const Icon(Icons.queue_music, color: Colors.white),
-                  onPressed: () => _showQueue(context),
                 ),
               ],
             ),
