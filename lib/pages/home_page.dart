@@ -87,21 +87,23 @@ class _HomePageState extends State<HomePage> {
     final filteredGenres = filterStrings(getUniqueGenres(allTracks));
 
     // whole front end design of the app
-    return Scaffold( 
+    return Scaffold(
       // applies the app drawer package
       backgroundColor: Theme.of(context).colorScheme.surface,
       drawer: buildAppDrawer(context),
-      // miniplayer 
+      // miniplayer
       bottomNavigationBar: const MiniPlayer(),
       body: SafeArea(
-        child: SingleChildScrollView(  // makes the widget scrollable
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10), 
+        child: SingleChildScrollView(
+          // makes the widget scrollable
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // allows multiple list of widgets in a widger
               Builder(
-                builder: (context) => Stack( // builds the context instances of the multiple widgets
+                builder: (context) => Stack(
+                  // builds the context instances of the multiple widgets
                   alignment: Alignment.center,
                   children: [
                     // applies the MyDrawer package
@@ -109,8 +111,13 @@ class _HomePageState extends State<HomePage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         IconButton(
-                          onPressed: () => Scaffold.of(context).openDrawer(), // callback for the iconbutton
-                          icon: const Icon(Icons.menu, size: 30), // caleb williams (for now)
+                          onPressed: () => Scaffold.of(
+                            context,
+                          ).openDrawer(), // callback for the iconbutton
+                          icon: const Icon(
+                            Icons.menu,
+                            size: 30,
+                          ), // caleb williams (for now)
                         ),
                         // Applies the the account circle (will be created later)
                         IconButton(
@@ -163,7 +170,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
-               // Creates multiple cards of each category
+              // Creates multiple cards of each category
               // Recently Added
               const SizedBox(height: 28),
               buildSectionTitle("Recently Added"),
@@ -206,7 +213,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-//  
+  //
   Widget buildSectionHeader(BuildContext context, String title, Widget page) {
     return GestureDetector(
       onTap: () =>
@@ -230,7 +237,10 @@ class _HomePageState extends State<HomePage> {
   Widget buildStaticHorizontalCards(List<Song> items) {
     return SizedBox(
       height: 150,
-      child: items.isEmpty // if the application does not have any uploaded songs on either local or server
+      child:
+          items
+              .isEmpty // if the application does not have any uploaded songs on either local or server
+          // ?  being null | :
           ? const Center(
               child: Text("No results found", style: TextStyle(fontSize: 16)),
             )
@@ -239,15 +249,26 @@ class _HomePageState extends State<HomePage> {
               itemCount: items.length,
               separatorBuilder: (context, index) => const SizedBox(width: 14),
               itemBuilder: (context, index) {
-                final song = items[index]; // retrieves the songs from the song package
-                return GestureDetector( 
-                  onTap: () { // allows the button to be pressed
-                    final trackInfo = context.read<TrackInfo>(); // finalizes the trackInfo from package TrackInfo
-                    final fullIndex = trackInfo.tracks.indexOf(song); // gets the full index of all the songs provided from song.dart
+                final song =
+                    items[index]; // retrieves the songs from the song package
+                return GestureDetector(
+                  onTap: () {
+                    // allows the button to be pressed
+                    final trackInfo = context
+                        .read<
+                          TrackInfo
+                        >(); // finalizes the trackInfo from package TrackInfo
+                    final fullIndex = trackInfo.tracks.indexOf(
+                      song,
+                    ); // gets the full index of all the songs provided from song.dart
                     if (fullIndex != -1) {
-                      trackInfo.playSong(fullIndex); // allows the user to play the song
+                      // -1 is used if the song wasnt on the list then it calls playsong()
+                      trackInfo.playSong(
+                        fullIndex,
+                      ); // allows the user to play the song
                     }
                   },
+                  // Shadow box underneath the recently added
                   child: Container(
                     width: 120,
                     decoration: BoxDecoration(
@@ -255,7 +276,7 @@ class _HomePageState extends State<HomePage> {
                       borderRadius: BorderRadius.circular(14),
                       boxShadow: const [
                         BoxShadow(
-                          color: Colors.black12,
+                          color: Color.fromARGB(160, 9, 42, 104),
                           blurRadius: 6,
                           offset: Offset(0, 3),
                         ),
@@ -270,7 +291,7 @@ class _HomePageState extends State<HomePage> {
                           Container(
                             padding: const EdgeInsets.all(6),
                             decoration: const BoxDecoration(
-                              color: Color.fromARGB(255, 71, 131, 221),
+                              color: Color.fromARGB(255, 24, 85, 170),
                               shape: BoxShape.circle,
                             ),
                             child: const Icon(
@@ -280,16 +301,18 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ),
                           const SizedBox(height: 8),
+                          // text title of the song | recently added
                           Text(
                             song.title,
                             textAlign: TextAlign.center,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
-                              fontSize: 13,
+                              fontSize: 15,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
+                          // text title of the artist | recently added
                           const SizedBox(height: 2),
                           Text(
                             song.artist,
@@ -328,6 +351,7 @@ class _HomePageState extends State<HomePage> {
               itemCount: items.length,
               separatorBuilder: (ctx, i) => const SizedBox(width: 14),
               itemBuilder: (context, index) {
+                // GestureDetector can detect widgets
                 return GestureDetector(
                   onTap: () => Navigator.push(
                     context,
@@ -340,7 +364,7 @@ class _HomePageState extends State<HomePage> {
                       borderRadius: BorderRadius.circular(14),
                       boxShadow: const [
                         BoxShadow(
-                          color: Colors.black12,
+                          color: Color.fromARGB(160, 9, 42, 104),
                           blurRadius: 6,
                           offset: Offset(0, 3),
                         ),

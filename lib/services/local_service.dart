@@ -12,13 +12,14 @@ class LocalAudioService {
 
     final List<SongModel> deviceSongs = await _audioQuery.querySongs(
       // puts the songs on the list
-      sortType: SongSortType.TITLE, // once approved, this would
+      sortType: SongSortType
+          .TITLE, // once approved, this would sort the audio by title.
       orderType: OrderType.ASC_OR_SMALLER,
       uriType: UriType.EXTERNAL,
       ignoreCase: true,
     );
 
-    return deviceSongs
+    return deviceSongs // filters the list of music and directs to the fromLocal where it send the to the list
         .where((s) => s.isMusic ?? false)
         .map(
           (s) => Song.fromLocal(
@@ -28,7 +29,7 @@ class LocalAudioService {
             album: s.album ?? 'Unknown Album',
             genre: s.genre ?? 'Unknown Genre',
             duration: Duration(milliseconds: s.duration ?? 0),
-            audioPath: s.data,
+            audioPath: s.data, // filepath that just_audio uses
             albumArtUrl: null,
           ),
         )
@@ -37,7 +38,9 @@ class LocalAudioService {
 
   // if the data provides artwork, then the user will be able to show the artwork up in the front
   Future<Uint8List?> fetchArtwork(int songId) async {
+    // unit8list fetches album art by listing the bytes of the image.
     return await _audioQuery.queryArtwork(
+      // sends it to the artwork.
       songId,
       ArtworkType.AUDIO,
       quality: 100,
