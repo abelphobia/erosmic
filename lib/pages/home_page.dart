@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:erosmic/pages/mini_player.dart';
 import 'package:erosmic/pages/genre_page.dart';
 import 'package:erosmic/models/track_info.dart';
-import 'package:provider/provider.dart'; // from pubspec.yaml
+import 'package:provider/provider.dart';
 import 'package:erosmic/models/song.dart';
 import 'package:erosmic/categories/my_drawer.dart';
 import 'package:erosmic/pages/albums_page.dart';
@@ -48,7 +48,7 @@ class _HomePageState extends State<HomePage> {
   // This creates a list for Albums and lets the user select it.
   List<String> getUniqueAlbums(List<Song> tracks) =>
       tracks.map((t) => t.album).toSet().toList();
-  // Filters the track then places the controller to a query. || VERIFY
+  // Filters the track then places the controller to a query.
   List<Song> filterTracks(List<Song> tracks) {
     final query = _searchController.text.toLowerCase();
     if (query.isEmpty) return tracks;
@@ -93,6 +93,8 @@ class _HomePageState extends State<HomePage> {
       drawer: buildAppDrawer(context),
       // miniplayer
       bottomNavigationBar: const MiniPlayer(),
+      // SafeArea ensures that the childs inset is placed without any intrusions
+      // this can lead to a text is obscured if not placed correctly.
       body: SafeArea(
         child: SingleChildScrollView(
           // makes the widget scrollable
@@ -100,29 +102,18 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // allows multiple list of widgets in a widger
+              // allows multiple list of widgets in a widget
               Builder(
                 builder: (context) => Stack(
                   // builds the context instances of the multiple widgets
                   alignment: Alignment.center,
                   children: [
-                    // applies the MyDrawer package
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         IconButton(
-                          onPressed: () => Scaffold.of(
-                            context,
-                          ).openDrawer(), // callback for the iconbutton
-                          icon: const Icon(
-                            Icons.menu,
-                            size: 30,
-                          ), // caleb williams (for now)
-                        ),
-                        // Applies the the account circle (will be created later)
-                        IconButton(
-                          onPressed: () {},
-                          icon: const Icon(Icons.account_circle, size: 30),
+                          onPressed: () => Scaffold.of(context).openDrawer(),
+                          icon: const Icon(Icons.menu, size: 30),
                         ),
                       ],
                     ),
@@ -141,7 +132,6 @@ class _HomePageState extends State<HomePage> {
 
               const SizedBox(height: 20),
 
-              // Greeting by time of the hour
               Text(
                 getGreeting(),
                 style: const TextStyle(
@@ -152,7 +142,7 @@ class _HomePageState extends State<HomePage> {
 
               const SizedBox(height: 18),
 
-              // Search bar // USE A NAVIGATOR
+              // Search bar for home page
               TextField(
                 controller: _searchController,
                 onChanged: (_) => setState(() {}),
@@ -170,26 +160,24 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
-              // Creates multiple cards of each category
-              // Recently Added
+
               const SizedBox(height: 28),
               buildSectionTitle("Recently Added"),
               const SizedBox(height: 14),
               buildStaticHorizontalCards(filteredRecentlyAdded),
 
-              // Albums
               const SizedBox(height: 28),
               buildSectionHeader(context, "Albums", const AlbumsPage()),
               const SizedBox(height: 14),
               buildHorizontalCards(context, filteredAlbums, const AlbumsPage()),
 
-              // Genre
+              // Genre header navigates to full GenrePage
               const SizedBox(height: 28),
               buildSectionHeader(context, "Genre", const GenrePage()),
               const SizedBox(height: 14),
-              buildHorizontalCards(context, filteredGenres, const GenrePage()),
+              // Genre cards  navigate directly to GenreTracksPage
+              buildGenreCards(context, filteredGenres),
 
-              // possible deletion, need to check when i get home.
               const SizedBox(height: 30),
             ],
           ),
@@ -198,13 +186,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // Applies the MyDrawer widget
-
-  Widget buildAppDrawer(BuildContext context) {
-    return const MyDrawer();
-  }
-
-  // Applies the Builders
+  Widget buildAppDrawer(BuildContext context) => const MyDrawer();
 
   Widget buildSectionTitle(String title) {
     return Text(
@@ -213,7 +195,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  //
+  // arrow to push the object onto another page. This is mostly applied to the genre / albums
   Widget buildSectionHeader(BuildContext context, String title, Widget page) {
     return GestureDetector(
       onTap: () =>
@@ -240,7 +222,7 @@ class _HomePageState extends State<HomePage> {
       child:
           items
               .isEmpty // if the application does not have any uploaded songs on either local or server
-          // ?  being null | :
+          // ?  being null | : can have excepetions
           ? const Center(
               child: Text("No results found", style: TextStyle(fontSize: 16)),
             )
@@ -253,22 +235,17 @@ class _HomePageState extends State<HomePage> {
                     items[index]; // retrieves the songs from the song package
                 return GestureDetector(
                   onTap: () {
-                    // allows the button to be pressed
                     final trackInfo = context
                         .read<
                           TrackInfo
-                        >(); // finalizes the trackInfo from package TrackInfo
-                    final fullIndex = trackInfo.tracks.indexOf(
-                      song,
-                    ); // gets the full index of all the songs provided from song.dart
+                        >(); // gets the full index of all the songs provided from song.dart
+                    final fullIndex = trackInfo.tracks.indexOf(song);
                     if (fullIndex != -1) {
                       // -1 is used if the song wasnt on the list then it calls playsong()
-                      trackInfo.playSong(
-                        fullIndex,
-                      ); // allows the user to play the song
+                      trackInfo.playSong(fullIndex);
                     }
                   },
-                  // Shadow box underneath the recently added
+                  // shadow boxes
                   child: Container(
                     width: 120,
                     decoration: BoxDecoration(
@@ -287,8 +264,8 @@ class _HomePageState extends State<HomePage> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          // Play button in the middle
                           Container(
+                            // play button on the recently added section
                             padding: const EdgeInsets.all(6),
                             decoration: const BoxDecoration(
                               color: Color.fromARGB(255, 24, 85, 170),
@@ -334,7 +311,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // Albums / Genres — String labels, clickable
+  // Albums Navigator
   Widget buildHorizontalCards(
     BuildContext context,
     List<String> items,
@@ -351,7 +328,6 @@ class _HomePageState extends State<HomePage> {
               itemCount: items.length,
               separatorBuilder: (ctx, i) => const SizedBox(width: 14),
               itemBuilder: (context, index) {
-                // GestureDetector can detect widgets
                 return GestureDetector(
                   onTap: () => Navigator.push(
                     context,
@@ -375,6 +351,61 @@ class _HomePageState extends State<HomePage> {
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
                           items[index],
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+    );
+  }
+
+  // Genre cards navigate directly to GenreTracksPage for that genre
+  Widget buildGenreCards(BuildContext context, List<String> genres) {
+    return SizedBox(
+      height: 150,
+      child: genres.isEmpty
+          ? const Center(
+              child: Text("No results found", style: TextStyle(fontSize: 16)),
+            )
+          : ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: genres.length,
+              separatorBuilder: (ctx, i) => const SizedBox(width: 14),
+              itemBuilder: (context, index) {
+                final genre = genres[index];
+                return GestureDetector(
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      // navigates directly to that genre's track list
+                      builder: (_) => GenreTracksPage(genre: genre),
+                    ),
+                  ),
+                  child: Container(
+                    width: 120,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(14),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Color.fromARGB(160, 9, 42, 104),
+                          blurRadius: 6,
+                          offset: Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          genre,
                           textAlign: TextAlign.center,
                           style: const TextStyle(
                             fontSize: 15,
