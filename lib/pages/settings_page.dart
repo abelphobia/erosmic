@@ -44,10 +44,8 @@ class SettingsPage extends StatelessWidget {
         subtitle: Text(
           themeProvider.isDarkMode ? "Enabled" : "Disabled",
           style: TextStyle(
-            color: colorScheme.onSurface.withOpacity(
-              0.7,
-            ), // readable subtitle color
-          ),
+            color: colorScheme.onSurface.withValues(alpha: 0.7),
+          ), // readable subtitle color
         ),
         activeColor:
             colorScheme.primary, // uses theme primary color for the switch
