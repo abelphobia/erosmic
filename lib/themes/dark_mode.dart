@@ -12,7 +12,6 @@ ThemeData darkMode = ThemeData(
     onPrimary: Colors.white,
     onSecondary: Colors.black,
   ),
-
   appBarTheme: const AppBarTheme(
     backgroundColor: Color(0xFF121212),
     foregroundColor: Colors.white,
@@ -26,7 +25,6 @@ ThemeData darkMode = ThemeData(
       color: Colors.white,
     ),
   ),
-
   textTheme: const TextTheme(
     displayLarge: TextStyle(color: Colors.white),
     displayMedium: TextStyle(color: Colors.white),
@@ -44,19 +42,16 @@ ThemeData darkMode = ThemeData(
     labelMedium: TextStyle(color: Colors.white),
     labelSmall: TextStyle(color: Colors.white70),
   ),
-
   listTileTheme: const ListTileThemeData(
     textColor: Colors.white,
     iconColor: Colors.white,
     tileColor: Color(0xFF121212),
   ),
-
   switchTheme: const SwitchThemeData(
     thumbColor: WidgetStatePropertyAll(Colors.white),
     trackColor: WidgetStatePropertyAll(Colors.tealAccent),
   ),
-
-  cardColor: const Color(0xFF1E1E1E),
+  cardColor: Color(0xFF1E1E1E),
   dividerColor: Colors.white24,
   iconTheme: const IconThemeData(
     color: Colors.white,
